@@ -30,7 +30,7 @@ dev-dependencies = [
 ]
 
 [tool.uv.sources]
-pytest-grabbag = { path = "../pytest_grabbag", editable = true }
+pytest-grabbag = { git = "https://github.com/BenGale93/pytest_grabbag" }
 
 [tool.ruff]
 line-length = 120
