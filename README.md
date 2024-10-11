@@ -100,8 +100,38 @@ It will then save a new README file in the current working directory, based on
 the contents of your library. Experiment with the prompt to fine-tune the
 result.
 
+## Configuration
+
+You can configure via the CLI, environment variables, an app specific config
+file, or via pyproject.toml.
+
+The config file is located at `~/.config/cli-llm/cli_llm.toml` on Unix and
+equivalent locations on other platforms.
+
+
+### ll-model
+
+The model to use.
+
+Default value: "llama3.2:3b"
+
+Type: str
+
+Examples:
+
+```toml
+# pyproject.toml
+[tool.cli-llm]
+ll_model = "other"
+```
+
+```toml
+# cli_llm.toml
+ll_model = "other"
+```
+
 ## Plans
 
 - Add functionality to place and find tools in the `.local` directory, making them useful across projects.
 - Extract common functions into the `helper` module.
-- Implement configuration support, so API keys (e.g., for authentication) can be specified.
+- Extend configuration support, so API keys (e.g., for authentication) can be specified.
