@@ -43,5 +43,5 @@ def test_invalid_module_error():
 
 
 def test_not_an_instance_of_toolrunnerinterface():
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="The class MockModel does not inherit from the ToolRunnerInterface."):
         get_tool("tests/conftest:MockModel")

@@ -63,6 +63,6 @@ def get_tool(name: str) -> type[ToolRunnerInterface]:
     class_ = getattr(module, class_name)
 
     if not issubclass(class_, ToolRunnerInterface):
-        msg = "TODO"
+        msg = f"The class {class_name} does not inherit from the ToolRunnerInterface."
         raise TypeError(msg)
     return class_  # type: ignore [no-any-return]
