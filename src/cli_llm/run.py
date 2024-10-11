@@ -9,6 +9,8 @@ import llm
 
 from cli_llm.errors import InvalidModuleError
 
+StringDict = dict[str, t.Any]
+
 
 class ToolRunnerInterface(ABC):
     """Class defining the LLM tool runner interface.
@@ -26,20 +28,20 @@ class ToolRunnerInterface(ABC):
         """The prompt for the tool."""
 
     @abstractmethod
-    def gather_data(self, **kwargs: t.Any) -> dict[str, t.Any]:
+    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         """Gathers the data needed for the prompt."""
 
-    def render(self, prompt_data: dict[str, t.Any]) -> str:
+    def render(self, prompt_data: StringDict) -> str:
         """Renders the data to a jinja2 template."""
         return jinja2.Template(self.prompt).render(**prompt_data)
 
     @abstractmethod
-    def process(self, ai_response: llm.Response, data: dict[str, t.Any]) -> None:
+    def process(self, ai_response: llm.Response, data: StringDict) -> None:
         """Processes the response from the LLM."""
 
     def run(self, **kwargs: t.Any) -> None:
         """Runs the tool."""
-        prompt_data = self.gather_data(**kwargs)
+        prompt_data = self.gather_data(cli_kwargs=kwargs)
         prompt = self.render(prompt_data)
         ai_response = self.model.prompt(prompt)
 

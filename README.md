@@ -49,11 +49,10 @@ Example usage:
 """
 
 from pathlib import Path
-from typing import Any
 
 import llm
 
-from cli_llm import ToolRunnerInterface, helpers
+from cli_llm import StringDict ToolRunnerInterface, helpers
 
 # The template should use Jinja2 syntax to construct the prompt.
 PROMPT = """
@@ -76,7 +75,8 @@ class Readme(ToolRunnerInterface):
 
     prompt = PROMPT
 
-    def gather_data(self, **kwargs: Any) -> dict[str, Any]:
+    # `cli_kwargs` are the user provided parameters
+    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         """Gather the source tree."""
         search_path = kwargs.get("path", Path.cwd())
         pattern = kwargs.get("pattern", "*")
@@ -84,7 +84,7 @@ class Readme(ToolRunnerInterface):
         return {"files": file_contents} # the keys in this dictionary are used in the prompt template
 
     # The `data` dictionary is the same as the dictionary returned from the gather_data method above
-    def process(self, ai_response: llm.Response, data: dict[str, Any]) -> None:
+    def process(self, ai_response: llm.Response, data: StringDict) -> None:
         """Save the new README."""
         Path("README.md").write_text(ai_response.text())
 

@@ -6,11 +6,10 @@ Example usage:
 """
 
 from pathlib import Path
-from typing import Any
 
 import llm
 
-from cli_llm.run import ToolRunnerInterface
+from cli_llm import StringDict, ToolRunnerInterface
 
 PROMPT = """
 - The user will provide you with the content of a Python programming file.
@@ -31,12 +30,12 @@ class Correct(ToolRunnerInterface):
 
     prompt = PROMPT
 
-    def gather_data(self, **kwargs: Any) -> dict[str, Any]:
+    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         """Gather the file to correct the grammar for."""
-        filename = Path(kwargs["path"])
+        filename = Path(cli_kwargs["path"])
         return {"file": filename}
 
-    def process(self, ai_response: llm.Response, data: dict[str, Any]) -> None:
+    def process(self, ai_response: llm.Response, data: StringDict) -> None:
         """Save the AI response to the given file."""
         filename = Path(data["file"])
         contents = ai_response.text()

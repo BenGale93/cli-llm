@@ -6,12 +6,11 @@ Example usage:
 """
 
 from pathlib import Path
-from typing import Any
 
 import llm
 import rich
 
-from cli_llm import ToolRunnerInterface, helpers
+from cli_llm import StringDict, ToolRunnerInterface, helpers
 
 PROMPT = """
 - Below are some python files from a library.
@@ -33,14 +32,14 @@ class Summarise(ToolRunnerInterface):
 
     prompt = PROMPT
 
-    def gather_data(self, **kwargs: Any) -> dict[str, Any]:
+    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         """Gather the source tree."""
-        search_path = kwargs.get("path", Path.cwd())
-        pattern = kwargs.get("pattern", "*")
+        search_path = cli_kwargs.get("path", Path.cwd())
+        pattern = cli_kwargs.get("pattern", "*")
         file_contents = helpers.gather_file_contents(search_path=search_path, pattern=pattern)
         return {"files": file_contents}
 
-    def process(self, ai_response: llm.Response, _data: dict[str, Any]) -> None:
+    def process(self, ai_response: llm.Response, _data: StringDict) -> None:
         """Print the AI response to stdout."""
         for chunk in ai_response:
             rich.print(chunk, end="")

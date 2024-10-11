@@ -1,11 +1,9 @@
 """Example tool."""
 
-from typing import Any
-
 import llm
 import rich
 
-from cli_llm.run import ToolRunnerInterface
+from cli_llm import StringDict, ToolRunnerInterface
 
 PROMPT = """
 - This is a test prompt
@@ -17,10 +15,10 @@ PROMPT = """
 class Summarise(ToolRunnerInterface):
     prompt = PROMPT
 
-    def gather_data(self, **kwargs: Any) -> dict[str, Any]:
-        return kwargs
+    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
+        return cli_kwargs
 
-    def process(self, ai_response: llm.Response, data: dict[str, Any]) -> None:
+    def process(self, ai_response: llm.Response, data: StringDict) -> None:
         for chunk in ai_response:
             rich.print(chunk, end="")
         for key, value in data.items():
