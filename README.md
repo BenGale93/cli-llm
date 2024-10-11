@@ -1,7 +1,7 @@
 ## Introduction
 
 This Python library provides a simple way to create and run custom Large
-Language Model (LLM) tools using a CLI interface. It is a Python
+Language Model (LLM) tools using a command-line interface. It is a Python
 re-implementation of [rust-devai](https://github.com/jeremychone/rust-devai),
 offering a user-friendly interface for developers to build their own LLM
 applications.
@@ -16,6 +16,14 @@ steps:
 cd cli-llm
 uv tool install .
 ```
+
+## LLM Set Up
+
+Currently, the tool defaults to `llama3.2:3b` and communicates with it using
+the `llm` Python library and the `llm-ollama` plugin. Therefore, it requires
+`ollama` to be installed on your system running the `llama3.2:3b` model.
+Install `ollama`, start a server in a shell using `ollama serve`, and then pull
+the desired model using `ollama pull llama3.2:3b`.
 
 ## Usage
 
@@ -95,6 +103,6 @@ result.
 
 ## Plans
 
-- Add ability to place and find tools in the `.local` directory, making them useful across projects.
+- Add functionality to place and find tools in the `.local` directory, making them useful across projects.
 - Extract common functions into the `helper` module.
-- Implement configuration support.
+- Implement configuration support, so API keys (e.g., for authentication) can be specified.
