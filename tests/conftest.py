@@ -49,3 +49,8 @@ def register_embed_demo_model(mock_model):
         yield
     finally:
         pm.unregister(name="undo-mock-models-plugin")
+
+
+@pytest.fixture
+def func_name(request: pytest.FixtureRequest):
+    return request.node.name
