@@ -12,7 +12,7 @@ import llm
 
 from cli_llm.run import ToolRunnerInterface
 
-TEST_PROMPT = """
+PROMPT = """
 - The user will provide you with the content of a Python programming file.
 - You will correct the English in the comments, but leave everything else unchanged.
 - Only modify comments if there is a spelling or grammar mistake.
@@ -29,7 +29,7 @@ TEST_PROMPT = """
 class Correct(ToolRunnerInterface):
     """Correct the grammar of a given python file."""
 
-    prompt = TEST_PROMPT
+    prompt = PROMPT
 
     def gather_data(self, **kwargs: Any) -> dict[str, Any]:
         """Gather the file to correct the grammar for."""

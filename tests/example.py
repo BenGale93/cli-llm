@@ -7,7 +7,7 @@ import rich
 
 from cli_llm.run import ToolRunnerInterface
 
-TEST_PROMPT = """
+PROMPT = """
 - This is a test prompt
 
 {{test}}
@@ -15,7 +15,7 @@ TEST_PROMPT = """
 
 
 class Summarise(ToolRunnerInterface):
-    prompt = TEST_PROMPT
+    prompt = PROMPT
 
     def gather_data(self, **kwargs: Any) -> dict[str, Any]:
         return kwargs

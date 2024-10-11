@@ -12,7 +12,7 @@ import llm
 
 from cli_llm.run import ToolRunnerInterface
 
-TEST_PROMPT = """
+PROMPT = """
 - The user will provide you with the content of a file.
 - You will improve the writing style to be more grammatically correct and engaging.
 - Do not respond with anything than the modified file.
@@ -26,7 +26,7 @@ TEST_PROMPT = """
 class Improve(ToolRunnerInterface):
     """Improve the writing of a given file."""
 
-    prompt = TEST_PROMPT
+    prompt = PROMPT
 
     def gather_data(self, **kwargs: Any) -> dict[str, Any]:
         """Gather the file to improve."""
