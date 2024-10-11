@@ -1,4 +1,9 @@
-"""Summarise tool."""
+"""Summarise tool.
+
+Example usage:
+
+`clm run summarise:Summarise -p path=src/ -p "patten=*.py"`
+"""
 
 import contextlib
 from pathlib import Path

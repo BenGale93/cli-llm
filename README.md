@@ -1,15 +1,16 @@
-# README
-
 ## Introduction
 
 This Python library provides a simple way to create and run custom Large
 Language Model (LLM) tools using a CLI interface. It is a Python
-re-implementation of [rust-devai](https://github.com/jeremychone/rust-devai)
+re-implementation of [rust-devai](https://github.com/jeremychone/rust-devai),
+offering a user-friendly interface for developers to build their own LLM
+applications.
 
 ## Installation
 
-To use this library, you will currently need to clone the repo and then install
-it as a `uv` tool:
+To utilize this library, you will currently need to clone the repository and
+then install it as a [`uv`](https://docs.astral.sh/uv/) tool. Follow these
+steps:
 
 ```bash
 cd cli-llm
@@ -18,17 +19,17 @@ uv tool install .
 
 ## Usage
 
-The library is designed to make it easy to run your own tools. Here's an
+The library is designed to make it easy to run your own LLM tools. Here's an
 example of how to use the `run` command:
 
 ```bash
 $ clm run python_file:ToolClass -p parameter1=value1 -p parameter2=value2
 ```
 
-This will run the specified LLM tool with the given parameters.
+This will execute the specified LLM tool with the given parameters.
 
-The LLM tool itself should be defined in a python file and contain a class that
-inherits from `cli_llm.ToolRunnerInterface`. For example:
+The LLM tool itself should be defined in a Python file and contain a class that
+inherits from `cli_llm.ToolRunnerInterface`. For instance:
 
 ````python
 # readme.py
@@ -89,11 +90,11 @@ clm run readme:Readme -p path=src/ -p "pattern=*.py"
 ```
 
 It will then save a new README file in the current working directory, based on
-the contents of your library. Play with prompt to fine-tune the result.
+the contents of your library. Experiment with the prompt to fine-tune the
+result.
 
-# Plans
+## Plans
 
-- Add ability to place and find tools in the `.local` directory. Making them
-    useful across projects.
+- Add ability to place and find tools in the `.local` directory, making them useful across projects.
 - Extract common functions into the `helper` module.
-- Add config support.
+- Implement configuration support.

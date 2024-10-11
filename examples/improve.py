@@ -1,8 +1,8 @@
-"""Correct the grammar of a given python file.
+"""Improve the writing of a given file.
 
 Example usage:
 
-`clm run correct:Correct -p path=FILE.txt`
+`clm run improve:Improve -p path=FILE.txt`
 """
 
 from pathlib import Path
@@ -13,26 +13,23 @@ import llm
 from cli_llm.run import ToolRunnerInterface
 
 TEST_PROMPT = """
-- The user will provide you with the content of a Python programming file.
-- You will correct the English in the comments, but leave everything else unchanged.
-- Only modify comments if there is a spelling or grammar mistake.
-- Make sure not to change the code, except for typos within strings.
-- Do not change the code itself, only comments.
-- Do not respond with anything than the modified code
+- The user will provide you with the content of a file.
+- You will improve the writing style to be more grammatically correct and engaging.
+- Do not respond with anything than the modified file.
 
-```python
+```
 {{file.read_text()}}
 ```
 """
 
 
-class Correct(ToolRunnerInterface):
-    """Correct the grammar of a given python file."""
+class Improve(ToolRunnerInterface):
+    """Improve the writing of a given file."""
 
     prompt = TEST_PROMPT
 
     def gather_data(self, **kwargs: Any) -> dict[str, Any]:
-        """Gather the file to correct the grammar for."""
+        """Gather the file to improve."""
         filename = Path(kwargs["path"])
         return {"file": filename}
 

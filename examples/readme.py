@@ -1,4 +1,9 @@
-"""README generation tool."""
+"""README generation tool.
+
+Example usage:
+
+`clm run readme:Readme -p path=src/ -p "patten=*.py"`
+"""
 
 import contextlib
 from pathlib import Path
