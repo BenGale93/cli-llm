@@ -1,9 +1,11 @@
 import os
 from pathlib import Path
 
+import llm
 from click.testing import CliRunner
 
 from cli_llm.cli import cli
+from cli_llm.config import ClmConfig
 
 EXAMPLE = Path("tests/example.py").read_text()
 
@@ -60,3 +62,9 @@ def test_config_from_env(temp_fs_factory, func_name):
 
     assert result.exit_code == 0
     assert result.output == "key1: value1\n"
+
+
+def test_default_model():
+    model = llm.get_model(ClmConfig().ll_model)
+
+    assert isinstance(model, llm.Model)

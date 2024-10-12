@@ -18,7 +18,7 @@ DIRS = PlatformDirs("cli-llm", "BAG")
 class ClmConfig(BaseSettings):
     """Config class for the application."""
 
-    ll_model: str = Field(default="llama3.2:2b")
+    ll_model: str = Field(default="llama3.2:latest")
 
     model_config = SettingsConfigDict(
         pyproject_toml_table_header=("tool", "cli-llm"),
