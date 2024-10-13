@@ -2,10 +2,14 @@
 
 import logging
 import typing as t
+from functools import wraps
 
 import click
 import rich
+from rich.console import Console
 from rich.logging import RichHandler
+
+from cli_llm.types import RT
 
 FORMAT = "%(message)s"
 logging.basicConfig(
@@ -16,6 +20,22 @@ logging.basicConfig(
 )
 
 NO_LOGGING = 60
+
+console = Console(record=True)
+
+
+def spinner(message: str) -> t.Callable[[t.Callable[..., RT]], t.Callable[..., RT]]:
+    """Runs the decorated function with a rich spinner using the given message."""
+
+    def decorator(func: t.Callable[..., RT]) -> t.Callable[..., RT]:
+        @wraps(func)
+        def wrapper(*args: t.Any, **kwargs: t.Any) -> RT:
+            with console.status(message):
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 class ClmLogger:

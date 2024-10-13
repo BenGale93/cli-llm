@@ -7,9 +7,7 @@ Example usage:
 
 from pathlib import Path
 
-import llm
-
-from cli_llm import StringDict, ToolRunnerInterface
+from cli_llm import Response, StringDict, ToolRunnerInterface
 
 PROMPT = """
 - The user will provide you with the content of a Python programming file.
@@ -35,7 +33,7 @@ class Correct(ToolRunnerInterface):
         filename = Path(cli_kwargs["path"])
         return {"file": filename}
 
-    def process(self, ai_response: llm.Response, data: StringDict) -> None:
+    def process(self, ai_response: Response, data: StringDict) -> None:
         """Save the AI response to the given file."""
         filename = Path(data["file"])
         contents = ai_response.text()

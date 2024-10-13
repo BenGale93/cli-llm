@@ -10,6 +10,7 @@ import llm
 from cli_llm.config import ClmConfig
 from cli_llm.errors import InvalidModuleError
 from cli_llm.logging import get_logger, print
+from cli_llm.response import Response
 
 StringDict = dict[str, t.Any]
 
@@ -40,7 +41,7 @@ class ToolRunnerInterface(ABC):
         return jinja2.Template(self.prompt).render(**prompt_data)
 
     @abstractmethod
-    def process(self, ai_response: llm.Response, data: StringDict) -> None:
+    def process(self, ai_response: Response, data: StringDict) -> None:
         """Processes the response from the LLM."""
 
     def run(self, **kwargs: t.Any) -> None:
@@ -56,7 +57,7 @@ class ToolRunnerInterface(ABC):
         prompt = self.render(prompt_data)
 
         print(f"Prompting {self.model}\n")
-        ai_response = self.model.prompt(prompt)
+        ai_response = Response(self.model.prompt(prompt))
 
         log.info("Running the process method.")
         try:
