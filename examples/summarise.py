@@ -7,10 +7,9 @@ Example usage:
 
 from pathlib import Path
 
-import llm
 import rich
 
-from cli_llm import StringDict, ToolRunnerInterface, helpers
+from cli_llm import Response, StringDict, ToolRunnerInterface, helpers
 
 PROMPT = """
 - Below are some python files from a library.
@@ -39,7 +38,7 @@ class Summarise(ToolRunnerInterface):
         file_contents = helpers.gather_file_contents(search_path=search_path, pattern=pattern)
         return {"files": file_contents}
 
-    def process(self, ai_response: llm.Response, _data: StringDict) -> None:
+    def process(self, ai_response: Response, _data: StringDict) -> None:
         """Print the AI response to stdout."""
         for chunk in ai_response:
             rich.print(chunk, end="")

@@ -7,6 +7,7 @@ import click
 from cli_llm.config import ClmConfig
 from cli_llm.logging import set_verbosity
 from cli_llm.run import run_tool
+from cli_llm.types import RT
 
 
 @click.group()
@@ -23,10 +24,7 @@ def process_cli_kwargs(parameters: tuple[str, t.Any]) -> dict[str, t.Any]:
     return dict(parameter_list)
 
 
-Func = t.TypeVar("Func", bound=t.Callable[..., t.Any])
-
-
-def common_options(fn: Func) -> Func:
+def common_options(fn: t.Callable[..., RT]) -> t.Callable[..., RT]:
     """Common options for commands."""
     return click.option("-v", "--verbose", count=True)(click.option("-q", "--quiet", is_flag=True, default=False)(fn))
 

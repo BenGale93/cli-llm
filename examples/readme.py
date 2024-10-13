@@ -7,9 +7,7 @@ Example usage:
 
 from pathlib import Path
 
-import llm
-
-from cli_llm import StringDict, ToolRunnerInterface, helpers
+from cli_llm import Response, StringDict, ToolRunnerInterface, helpers
 
 PROMPT = """
 - Below are some python files from a library.
@@ -38,6 +36,6 @@ class Readme(ToolRunnerInterface):
         file_contents = helpers.gather_file_contents(search_path=search_path, pattern=pattern)
         return {"files": file_contents}
 
-    def process(self, ai_response: llm.Response, _data: StringDict) -> None:
+    def process(self, ai_response: Response, _data: StringDict) -> None:
         """Save the new README."""
         Path("README.md").write_text(ai_response.text())

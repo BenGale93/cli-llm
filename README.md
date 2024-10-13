@@ -50,9 +50,7 @@ Example usage:
 
 from pathlib import Path
 
-import llm
-
-from cli_llm import StringDict ToolRunnerInterface, helpers
+from cli_llm import Response, StringDict, ToolRunnerInterface, helpers
 
 # The template should use Jinja2 syntax to construct the prompt.
 PROMPT = """
@@ -84,7 +82,7 @@ class Readme(ToolRunnerInterface):
         return {"files": file_contents} # the keys in this dictionary are used in the prompt template
 
     # The `data` dictionary is the same as the dictionary returned from the gather_data method above
-    def process(self, ai_response: llm.Response, data: StringDict) -> None:
+    def process(self, ai_response: Response, data: StringDict) -> None:
         """Save the new README."""
         Path("README.md").write_text(ai_response.text())
 

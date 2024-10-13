@@ -1,9 +1,8 @@
 """Example tool."""
 
-import llm
 import rich
 
-from cli_llm import StringDict, ToolRunnerInterface
+from cli_llm import Response, StringDict, ToolRunnerInterface
 
 PROMPT = """
 - This is a test prompt
@@ -18,7 +17,7 @@ class Summarise(ToolRunnerInterface):
     def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         return cli_kwargs
 
-    def process(self, ai_response: llm.Response, data: StringDict) -> None:
+    def process(self, ai_response: Response, data: StringDict) -> None:
         for chunk in ai_response:
             rich.print(chunk, end="")
         for key, value in data.items():
@@ -31,5 +30,5 @@ class BadGatherData(Summarise):
 
 
 class BadProcess(Summarise):
-    def process(self, ai_response: llm.Response, data: StringDict) -> None:  # noqa: ARG002
+    def process(self, ai_response: Response, data: StringDict) -> None:  # noqa: ARG002
         raise ZeroDivisionError
