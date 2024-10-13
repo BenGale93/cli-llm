@@ -22,7 +22,7 @@ def test_config_from_pyproject(temp_fs_factory, func_name):
 
     with temp_fs.chdir():
         runner = CliRunner(mix_stderr=False)
-        result = runner.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1"])
+        result = runner.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1", "-q"])
 
     assert result.exit_code == 0
     assert result.output == "key1: value1\n"
@@ -40,7 +40,7 @@ def test_config_from_cli_overrides_pyproject(temp_fs_factory, func_name):
 
     with temp_fs.chdir():
         runner = CliRunner(mix_stderr=False)
-        result = runner.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1", "-m", "mock"])
+        result = runner.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1", "-m", "mock", "-q"])
 
     assert result.exit_code == 0
     assert result.output == "key1: value1\n"
@@ -58,7 +58,7 @@ def test_config_from_env(temp_fs_factory, func_name):
     with temp_fs.chdir():
         os.environ["LL_MODEL"] = "mock"
         runner = CliRunner(mix_stderr=False)
-        result = runner.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1"])
+        result = runner.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1", "-q"])
 
     assert result.exit_code == 0
     assert result.output == "key1: value1\n"

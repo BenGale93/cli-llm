@@ -3,10 +3,10 @@
 import typing as t
 
 import click
-import llm
 
 from cli_llm.config import ClmConfig
-from cli_llm.run import get_tool
+from cli_llm.logging import set_verbosity
+from cli_llm.run import run_tool
 
 
 @click.group()
@@ -23,13 +23,22 @@ def process_cli_kwargs(parameters: tuple[str, t.Any]) -> dict[str, t.Any]:
     return dict(parameter_list)
 
 
+Func = t.TypeVar("Func", bound=t.Callable[..., t.Any])
+
+
+def common_options(fn: Func) -> Func:
+    """Common options for commands."""
+    return click.option("-v", "--verbose", count=True)(click.option("-q", "--quiet", is_flag=True, default=False)(fn))
+
+
 @cli.command()
 @click.argument("name", required=True, type=str)
 @click.option("-m", "--ll-model", default=None, help="The LLM to use.")
 @click.option("-p", "--parameter", multiple=True, help="Parameters to forward to the selected tool.")
-def run(name: str, ll_model: str | None, parameter: tuple[str, t.Any]) -> None:
+@common_options
+def run(*, name: str, ll_model: str | None, parameter: tuple[str, t.Any], verbose: int, quiet: bool) -> None:
     """Run the specified LLM tool."""
-    parameters = process_cli_kwargs(parameter)
+    set_verbosity(verbose=verbose, quiet=quiet)
 
     cli_settings = {}
     if ll_model:
@@ -37,7 +46,5 @@ def run(name: str, ll_model: str | None, parameter: tuple[str, t.Any]) -> None:
 
     final_config = ClmConfig(**cli_settings)
 
-    tool = get_tool(name)
-
-    model = llm.get_model(final_config.ll_model)
-    tool(model).run(**parameters)
+    parameters = process_cli_kwargs(parameter)
+    run_tool(name, final_config, parameters)
