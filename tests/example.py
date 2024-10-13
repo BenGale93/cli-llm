@@ -23,3 +23,13 @@ class Summarise(ToolRunnerInterface):
             rich.print(chunk, end="")
         for key, value in data.items():
             rich.print(f"{key}: {value}")
+
+
+class BadGatherData(Summarise):
+    def gather_data(self, cli_kwargs: StringDict) -> StringDict:  # noqa: ARG002
+        raise ZeroDivisionError
+
+
+class BadProcess(Summarise):
+    def process(self, ai_response: llm.Response, data: StringDict) -> None:  # noqa: ARG002
+        raise ZeroDivisionError

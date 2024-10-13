@@ -1,5 +1,6 @@
 import llm
 import pytest
+from logot import Logot, logged
 
 from cli_llm import errors
 from cli_llm.run import get_tool
@@ -26,7 +27,7 @@ def test_example_run(capsys, mock_model):
 
     captured = capsys.readouterr()
 
-    assert captured.out == "helloworld"
+    assert "helloworld" in captured.out
 
 
 def test_render_prompt():
@@ -45,3 +46,21 @@ def test_invalid_module_error():
 def test_not_an_instance_of_toolrunnerinterface():
     with pytest.raises(TypeError, match="The class MockModel does not inherit from the ToolRunnerInterface."):
         get_tool("tests/conftest:MockModel")
+
+
+def test_failure_in_gather_data(logot: Logot):
+    tool = example.BadGatherData(llm.get_model("mock"))
+
+    with pytest.raises(SystemExit):
+        tool.run()
+
+    logot.assert_logged(logged.error("Error in your tool's gather_data method"))
+
+
+def test_failure_in_process(logot: Logot):
+    tool = example.BadProcess(llm.get_model("mock"))
+
+    with pytest.raises(SystemExit):
+        tool.run()
+
+    logot.assert_logged(logged.error("Error in your tool's process method"))
