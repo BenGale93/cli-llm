@@ -5,23 +5,22 @@ import typing as t
 from functools import wraps
 
 import click
-import rich
 from rich.console import Console
 from rich.logging import RichHandler
 
 from cli_llm.types import RT
+
+console = Console(record=True, stderr=True)
 
 FORMAT = "%(message)s"
 logging.basicConfig(
     level="WARNING",
     format=FORMAT,
     datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True, tracebacks_suppress=[click])],
+    handlers=[RichHandler(rich_tracebacks=True, tracebacks_suppress=[click], console=console)],
 )
 
-NO_LOGGING = 60
-
-console = Console(record=True)
+NO_LOGGING = logging.ERROR
 
 
 def spinner(message: str) -> t.Callable[[t.Callable[..., RT]], t.Callable[..., RT]]:
@@ -60,16 +59,14 @@ class ClmLogger:
         """Set the verbosity of the logger."""
         if quiet:
             self.verbose = NO_LOGGING
-            return
-        self.verbose = self.VERBOSE_COUNT[verbose]
+        else:
+            self.verbose = self.VERBOSE_COUNT[verbose]
         self._log.setLevel(self.verbose)
 
-    def print(
-        self, *objects: t.Any, sep: str = " ", end: str = "\n", file: t.IO[str] | None = None, flush: bool = False
-    ) -> None:
+    def print(self, *objects: t.Any, sep: str = " ", end: str = "\n") -> None:
         """Print if not quiet."""
         if self.verbose < NO_LOGGING:
-            rich.print(*objects, sep=sep, end=end, file=file, flush=flush)
+            console.print(*objects, sep=sep, end=end)
 
 
 _clm_logger = ClmLogger()

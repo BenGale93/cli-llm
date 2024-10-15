@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import llm
 import pytest
+from click.testing import CliRunner
 from llm.plugins import pm
 from pydantic import Field
 
@@ -54,3 +57,18 @@ def register_embed_demo_model(mock_model):
 @pytest.fixture
 def func_name(request: pytest.FixtureRequest):
     return request.node.name
+
+
+@pytest.fixture
+def fake_project(request, temp_fs_factory):
+    temp_fs = temp_fs_factory.mktemp(request.node.name)
+
+    temp_fs.gen(
+        {
+            "pyproject.toml": {"tool": {"cli-llm": {"ll_model": "mock", "tools_dir": "tools"}}},
+            "tools": {"example.py": Path("tests/example.py").read_text()},
+        }
+    )
+
+    with temp_fs.chdir():
+        yield CliRunner(mix_stderr=False)
