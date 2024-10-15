@@ -71,7 +71,12 @@ disallow_incomplete_defs = false
 disallow_subclassing_any = false
 
 [tool.coverage.report]
-exclude_also = ["if t.TYPE_CHECKING", "@t.overload", "@abstractmethod"]
+exclude_also = [
+    "if t.TYPE_CHECKING",
+    "@t.overload",
+    "@abstractmethod",
+    "if TYPE_CHECKING",
+]
 fail_under = 100
 show_missing = true
 
@@ -84,3 +89,6 @@ filterwarnings = [
     "ignore::DeprecationWarning::",            # ignore deprecations from all modules
     "default::DeprecationWarning:mymodule.*:", # except from mymodule
 ]
+
+[tool.cli-llm]
+tools_dir = "examples"

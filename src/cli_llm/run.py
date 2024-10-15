@@ -67,20 +67,24 @@ class ToolRunnerInterface(ABC):
             raise SystemExit(1) from None
 
 
-def get_tool(name: str) -> type[ToolRunnerInterface]:
+def get_tool(name: str, settings: ClmConfig | None = None) -> type[ToolRunnerInterface]:
     """Get the tool with the given name."""
+    settings = settings or ClmConfig()
     module_name, class_name = name.split(":")
 
     module_file = f"{module_name}.py"
 
-    spec = util.spec_from_file_location("test", module_file)
+    log.info("Looking for the tool in: %s", settings.tools_dir)
+    full_module_file = settings.tools_dir / module_file
+
+    spec = util.spec_from_file_location("test", full_module_file)
     if spec is None or spec.loader is None:  # pragma: no cover # Not sure how to trigger this scenario
-        raise InvalidModuleError(name)
+        raise InvalidModuleError(name, settings.tools_dir)
     module = util.module_from_spec(spec)
     try:
         spec.loader.exec_module(module)
     except FileNotFoundError as e:
-        raise InvalidModuleError(name) from e
+        raise InvalidModuleError(name, settings.tools_dir) from e
     class_ = getattr(module, class_name)
 
     if not issubclass(class_, ToolRunnerInterface):
@@ -89,10 +93,15 @@ def get_tool(name: str) -> type[ToolRunnerInterface]:
     return class_  # type: ignore [no-any-return]
 
 
-def run_tool(name: str, settings: ClmConfig, cli_kwargs: StringDict) -> None:
+def run_tool(name: str, cli_kwargs: StringDict, settings: ClmConfig | None = None) -> None:
     """Run the given tool with the desired settings and kwargs."""
+    settings = settings or ClmConfig()
     log.debug("Using tool: %s", name)
-    tool_class = get_tool(name)
+    try:
+        tool_class = get_tool(name, settings)
+    except Exception:
+        log.exception("Error trying to find the tool you specified.")
+        raise SystemExit(1) from None
 
     log.debug("Getting LL model: %s", settings.ll_model)
     model = llm.get_model(settings.ll_model)

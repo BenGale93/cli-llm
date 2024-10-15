@@ -1,9 +1,12 @@
+from pathlib import Path
+
 import llm
 import pytest
 from logot import Logot, logged
 
 from cli_llm import errors
-from cli_llm.run import get_tool
+from cli_llm.config import ClmConfig
+from cli_llm.run import get_tool, run_tool
 from tests import example
 
 
@@ -45,7 +48,7 @@ def test_invalid_module_error():
 
 def test_not_an_instance_of_toolrunnerinterface():
     with pytest.raises(TypeError, match="The class MockModel does not inherit from the ToolRunnerInterface."):
-        get_tool("tests/conftest:MockModel")
+        get_tool("conftest:MockModel", ClmConfig(ll_model="mock", tools_dir=Path("tests")))
 
 
 def test_failure_in_gather_data(logot: Logot):
@@ -64,3 +67,10 @@ def test_failure_in_process(logot: Logot):
         tool.run()
 
     logot.assert_logged(logged.error("Error in your tool's process method"))
+
+
+def test_run_tool_cant_find(logot: Logot):
+    with pytest.raises(SystemExit):
+        run_tool("fake:FakeTool", {})
+
+    logot.assert_logged(logged.error("Error trying to find the tool you specified."))

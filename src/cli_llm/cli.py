@@ -38,11 +38,11 @@ def run(*, name: str, ll_model: str | None, parameter: tuple[str, t.Any], verbos
     """Run the specified LLM tool."""
     set_verbosity(verbose=verbose, quiet=quiet)
 
-    cli_settings = {}
+    cli_settings: dict[str, t.Any] = {}
     if ll_model:
         cli_settings["ll_model"] = ll_model
 
     final_config = ClmConfig(**cli_settings)
 
     parameters = process_cli_kwargs(parameter)
-    run_tool(name, final_config, parameters)
+    run_tool(name, parameters, final_config)

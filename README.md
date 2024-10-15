@@ -27,17 +27,19 @@ the desired model using `ollama pull llama3.2:3b`.
 
 ## Usage
 
-The library is designed to make it easy to run your own LLM tools. Here's an
-example of how to use the `run` command:
+The library is designed to make it easy to run your own LLM tools. By default
+it will search the `$HOME/.local/share/cli-llm` folder (or equivalent on other
+platforms), for the tool. Here's an example of how to use the `run` command:
 
 ```bash
 $ clm run python_file:ToolClass -p parameter1=value1 -p parameter2=value2
 ```
 
-This will execute the specified LLM tool with the given parameters.
+This will search for `python_file.py` and then execute the ToolClass found
+within, with the given parameters.
 
-The LLM tool itself should be defined in a Python file and contain a class that
-inherits from `cli_llm.ToolRunnerInterface`. For instance:
+The LLM tool itself should be defined by a class that inherits from
+`cli_llm.ToolRunnerInterface`. For instance:
 
 ````python
 # readme.py
@@ -88,15 +90,14 @@ class Readme(ToolRunnerInterface):
 
 ````
 
-Assuming this file is in your working directory, you can run it with:
+Place `readme.py` in `~/.local/share/cli-llm` and you can run it with:
 
 ```bash
 clm run readme:Readme -p path=src/ -p "pattern=*.py"
 ```
 
-It will then save a new README file in the current working directory, based on
-the contents of your library. Experiment with the prompt to fine-tune the
-result.
+It will save a new README file in the current working directory, based on the
+contents of your library. Experiment with the prompt to fine-tune the result.
 
 ## Configuration
 
@@ -128,8 +129,28 @@ ll_model = "other"
 ll_model = "other"
 ```
 
+### tools-dir
+
+The directory to search for tools within.
+
+Default value: `~/.local/share/cli-llm`
+
+Type: Path
+
+Examples:
+
+```toml
+# pyproject.toml
+[tool.cli-llm]
+tools_dir = "~/tools"
+```
+
+```toml
+# cli_llm.toml
+tools_dir = "~/tools"
+```
+
 ## Plans
 
-- Add functionality to place and find tools in the `.local` directory, making them useful across projects.
 - Extract common functions into the `helper` module.
 - Extend configuration support, so API keys (e.g., for authentication) can be specified.

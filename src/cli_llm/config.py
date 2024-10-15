@@ -19,10 +19,11 @@ class ClmConfig(BaseSettings):
     """Config class for the application."""
 
     ll_model: str = Field(default="llama3.2:latest")
+    tools_dir: Path = Field(default=DIRS.user_data_path)
 
     model_config = SettingsConfigDict(
         pyproject_toml_table_header=("tool", "cli-llm"),
-        toml_file=Path(DIRS.user_config_dir) / "cli_llm.toml",
+        toml_file=DIRS.user_config_path / "cli_llm.toml",
     )
 
     @classmethod

@@ -3,7 +3,7 @@ default: lint type_check test
 alias t := test
 
 @test:
-    COV_CORE_SOURCE=src COV_CORE_CONFIG=pyproject.toml COV_CORE_DATAFILE=.coverage.eager uv run pytest
+    uv run pytest tests/
 
 alias tc := type_check
 
