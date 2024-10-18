@@ -8,7 +8,7 @@ import jinja2
 import llm
 
 from cli_llm.config import ClmConfig
-from cli_llm.errors import InvalidModuleError
+from cli_llm.errors import InvalidModuleError, InvalidToolClassError
 from cli_llm.logging import get_logger, print
 from cli_llm.response import Response
 
@@ -85,11 +85,15 @@ def get_tool(name: str, settings: ClmConfig | None = None) -> type[ToolRunnerInt
         spec.loader.exec_module(module)
     except FileNotFoundError as e:
         raise InvalidModuleError(name, settings.tools_dir) from e
-    class_ = getattr(module, class_name)
+    try:
+        class_ = getattr(module, class_name)
+    except AttributeError:
+        msg = f"Could not find the class: `{class_name}` in the module: `{module_name}`"
+        raise InvalidToolClassError(msg) from None
 
     if not issubclass(class_, ToolRunnerInterface):
-        msg = f"The class {class_name} does not inherit from the ToolRunnerInterface."
-        raise TypeError(msg)
+        msg = f"The class `{class_name}` does not inherit from the `ToolRunnerInterface`."
+        raise InvalidToolClassError(msg)
     return class_  # type: ignore [no-any-return]
 
 

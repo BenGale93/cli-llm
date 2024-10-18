@@ -1,10 +1,11 @@
 """Module for encapsulating the llm.Response class."""
 
 import typing as t
+from pathlib import Path
 
 import llm
 
-from cli_llm.logging import spinner
+from cli_llm.logging import console, spinner
 
 
 class Response:
@@ -31,3 +32,22 @@ class Response:
     def __iter__(self) -> t.Iterator[str]:
         """Iterate over this class instance's underlying llm Response object's iterator."""
         return iter(self._response)
+
+    def stream(self) -> None:
+        """Stream the AI response to the terminal."""
+        for chunk in self:
+            console.print(chunk, end="")
+
+    @spinner("Fetching JSON response from LLM...")
+    def json(self) -> dict[str, t.Any] | None:
+        """Return LLM response as a JSON, if applicable."""
+        return self._response.json()
+
+    def write_to_file(self, filepath: str | Path) -> None:
+        """Writes the full text response from the LLM to a given file path."""
+        import os
+
+        contents = self.text()
+        if not contents.endswith(os.linesep):
+            contents += os.linesep
+        Path(filepath).write_text(contents)

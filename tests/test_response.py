@@ -1,19 +1,40 @@
 import llm
+import pytest
+from rich.console import Console
 
+from cli_llm import logging
 from cli_llm.response import Response
 
 
-def test_spinner_from_text(mock_model):
-    # Can't get the spinner to be capture, possible because the function
-    # doesn't take long enough to run the spinner.
-    # So we just run the function a check there are no errors.
+@pytest.fixture
+def patched_console():
+    logging.console = Console(record=True, stderr=True, force_terminal=True)
+    yield logging.console
+    logging.console = Console(record=True, stderr=True)
+
+
+def test_text(mock_model, patched_console):
     mock_model.enqueue(["helloworld"])
     model = llm.get_model("mock")
 
     response = Response(model.prompt(""))
-    result = response.text()
+    with patched_console.capture() as capture:
+        result = response.text()
 
+    assert "Fetching response from LLM..." in capture.get()
     assert result == "helloworld"
+
+
+def test_json(mock_model, patched_console):
+    mock_model.enqueue(["helloworld"])
+    model = llm.get_model("mock")
+
+    response = Response(model.prompt(""))
+    with patched_console.capture() as capture:
+        result = response.json()
+
+    assert "Fetching JSON response from LLM..." in capture.get()
+    assert result is None
 
 
 def test_response_interface(mock_model):
@@ -25,3 +46,39 @@ def test_response_interface(mock_model):
 
     assert response.response == core_response
     assert repr(response) == repr(core_response)
+
+
+def test_stream(mock_model, capsys):
+    mock_model.enqueue(["helloworld"])
+    model = llm.get_model("mock")
+
+    response = Response(model.prompt(""))
+    response.stream()
+
+    assert "helloworld" in capsys.readouterr()
+
+
+def test_write_to_file(mock_model, temp_fs_factory, func_name):
+    temp_fs = temp_fs_factory.mktemp(func_name)
+    mock_model.enqueue(["helloworld"])
+    model = llm.get_model("mock")
+
+    response = Response(model.prompt(""))
+
+    test_file = temp_fs / "test.txt"
+    response.write_to_file(test_file)
+
+    assert test_file.read_text() == "helloworld\n"
+
+
+def test_write_to_file_has_newline(mock_model, temp_fs_factory, func_name):
+    temp_fs = temp_fs_factory.mktemp(func_name)
+    mock_model.enqueue(["helloworld\n"])
+    model = llm.get_model("mock")
+
+    response = Response(model.prompt(""))
+
+    test_file = temp_fs / "test.txt"
+    response.write_to_file(test_file)
+
+    assert test_file.read_text() == "helloworld\n"

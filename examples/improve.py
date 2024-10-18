@@ -32,10 +32,4 @@ class Improve(ToolRunnerInterface):
 
     def process(self, ai_response: Response, data: StringDict) -> None:
         """Save the AI response to the given file."""
-        filename = Path(data["file"])
-        contents = ai_response.text()
-
-        if not contents.endswith("\n"):
-            contents += "\n"
-
-        filename.write_text(contents)
+        ai_response.write_to_file(data["file"])
