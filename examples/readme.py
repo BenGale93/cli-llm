@@ -2,7 +2,7 @@
 
 Example usage:
 
-`clm run readme:Readme -p path=src/ -p "patten=*.py"`
+`clm run readme:Readme -p path=src/ -p "pattern=*.py"`
 """
 
 from pathlib import Path
@@ -38,4 +38,4 @@ class Readme(ToolRunnerInterface):
 
     def process(self, ai_response: Response, _data: StringDict) -> None:
         """Save the new README."""
-        Path("README.md").write_text(ai_response.text())
+        ai_response.write_to_file("README.md")

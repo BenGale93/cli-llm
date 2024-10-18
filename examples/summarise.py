@@ -2,12 +2,10 @@
 
 Example usage:
 
-`clm run summarise:Summarise -p path=src/ -p "patten=*.py"`
+`clm run summarise:Summarise -p path=src/ -p "pattern=*.py"`
 """
 
 from pathlib import Path
-
-import rich
 
 from cli_llm import Response, StringDict, ToolRunnerInterface, helpers
 
@@ -40,5 +38,4 @@ class Summarise(ToolRunnerInterface):
 
     def process(self, ai_response: Response, _data: StringDict) -> None:
         """Print the AI response to stdout."""
-        for chunk in ai_response:
-            rich.print(chunk, end="")
+        ai_response.stream()

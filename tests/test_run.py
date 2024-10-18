@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import llm
 import pytest
@@ -9,11 +10,14 @@ from cli_llm.config import ClmConfig
 from cli_llm.run import get_tool, run_tool
 from tests import example
 
+if TYPE_CHECKING:
+    from conftest import MockModel
+
 
 def test_mock_model(mock_model):
     mock_model.enqueue(["hello world"])
     mock_model.enqueue(["second"])
-    model = llm.get_model("mock")
+    model: MockModel = llm.get_model("mock")
     response = model.prompt(prompt="hello")
     assert response.text() == "hello world"
     assert str(response) == "hello world"
@@ -46,8 +50,17 @@ def test_invalid_module_error():
         get_tool("tests/fake:FakeTool")
 
 
+def test_tool_class_not_found():
+    with pytest.raises(
+        errors.InvalidToolClassError, match="Could not find the class: `Fake` in the module: `conftest`"
+    ):
+        get_tool("conftest:Fake", ClmConfig(ll_model="mock", tools_dir=Path("tests")))
+
+
 def test_not_an_instance_of_toolrunnerinterface():
-    with pytest.raises(TypeError, match="The class MockModel does not inherit from the ToolRunnerInterface."):
+    with pytest.raises(
+        errors.InvalidToolClassError, match="The class `MockModel` does not inherit from the `ToolRunnerInterface`."
+    ):
         get_tool("conftest:MockModel", ClmConfig(ll_model="mock", tools_dir=Path("tests")))
 
 

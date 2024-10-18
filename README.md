@@ -47,7 +47,7 @@ The LLM tool itself should be defined by a class that inherits from
 
 Example usage:
 
-`clm run readme:Readme -p path=src/ -p "patten=*.py"`
+`clm run readme:Readme -p path=src/ -p "pattern=*.py"`
 """
 
 from pathlib import Path
@@ -86,7 +86,7 @@ class Readme(ToolRunnerInterface):
     # The `data` dictionary is the same as the dictionary returned from the gather_data method above
     def process(self, ai_response: Response, data: StringDict) -> None:
         """Save the new README."""
-        Path("README.md").write_text(ai_response.text())
+        ai_response.write_to_file("README.md")
 
 ````
 
