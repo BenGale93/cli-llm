@@ -39,7 +39,7 @@ class Response:
             console.print(chunk, end="")
 
     @spinner("Fetching JSON response from LLM...")
-    def json(self) -> dict[str, t.Any] | None:
+    def json(self) -> t.Any:
         """Return LLM response as a JSON, if applicable."""
         return self._response.json()
 
