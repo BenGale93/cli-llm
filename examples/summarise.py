@@ -2,10 +2,12 @@
 
 Example usage:
 
-`clm run summarise:Summarise -p path=src/ -p "pattern=*.py"`
+`clm run summarise:Summarise --path src/ --pattern "*.py"`
 """
 
 from pathlib import Path
+
+import click
 
 from cli_llm import Response, StringDict, ToolRunnerInterface, helpers
 
@@ -28,6 +30,7 @@ class Summarise(ToolRunnerInterface):
     """Summarise the code and make some suggestions for new features."""
 
     prompt = PROMPT
+    ARGS = (click.Option(["--path"]), click.Option(["--pattern"]))
 
     def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         """Gather the source tree."""

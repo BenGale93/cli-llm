@@ -2,10 +2,12 @@
 
 Example usage:
 
-`clm run correct:Correct -p path=FILE.txt`
+`clm run correct:Correct FILE.txt`
 """
 
 from pathlib import Path
+
+import click
 
 from cli_llm import Response, StringDict, ToolRunnerInterface
 
@@ -27,6 +29,7 @@ class Correct(ToolRunnerInterface):
     """Correct the grammar of a given python file."""
 
     prompt = PROMPT
+    ARGS = (click.Argument(["path"]),)
 
     def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         """Gather the file to correct the grammar for."""

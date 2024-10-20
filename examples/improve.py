@@ -2,10 +2,12 @@
 
 Example usage:
 
-`clm run improve:Improve -p path=FILE.txt`
+`clm run improve:Improve FILE.txt`
 """
 
 from pathlib import Path
+
+import click
 
 from cli_llm import Response, StringDict, ToolRunnerInterface
 
@@ -24,6 +26,7 @@ class Improve(ToolRunnerInterface):
     """Improve the writing of a given file."""
 
     prompt = PROMPT
+    ARGS = (click.Argument(["path"]),)
 
     def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         """Gather the file to improve."""
