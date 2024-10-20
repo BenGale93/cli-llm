@@ -66,7 +66,13 @@ def fake_project(request, temp_fs_factory):
     temp_fs.gen(
         {
             "pyproject.toml": {"tool": {"cli-llm": {"ll_model": "mock", "tools_dir": "tools"}}},
-            "tools": {"example.py": Path("tests/example.py").read_text()},
+            "tools": {
+                "example.py": Path("tests/example.py").read_text(),
+                "bad_type.py": "tool = 1",
+                "skip.py": "tool = None",
+                "no_attr.py": "",
+                "bad_module.py": "1/0",
+            },
         }
     )
 

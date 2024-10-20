@@ -2,14 +2,14 @@
 
 Example usage:
 
-`clm run readme:Readme --path src/ --pattern "*.py"`
+`clm run readme src/ --pattern "*.py"`
 """
 
 from pathlib import Path
 
 import click
 
-from cli_llm import Response, StringDict, ToolRunnerInterface, helpers
+from cli_llm import ClmConfig, helpers, run
 
 PROMPT = """
 - Below are some python files from a library.
@@ -26,19 +26,15 @@ Filename: {{file}}
 """
 
 
-class Readme(ToolRunnerInterface):
-    """Generate a README for the library."""
+@click.command()
+@click.argument("path", type=Path)
+@click.option("--pattern", type=str, default="*")
+@click.pass_obj
+def tool(config: ClmConfig, path: Path, pattern: str) -> None:
+    """Correct the grammar of a given python file."""
+    file_contents = helpers.gather_file_contents(search_path=path, pattern=pattern)
+    data = {"files": file_contents}
 
-    prompt = PROMPT
-    ARGS = (click.Option(["--path"]), click.Option(["--pattern"]))
+    ai_response = run(config, PROMPT, data)
 
-    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
-        """Gather the source tree."""
-        search_path = cli_kwargs.get("path", Path.cwd())
-        pattern = cli_kwargs.get("pattern", "*")
-        file_contents = helpers.gather_file_contents(search_path=search_path, pattern=pattern)
-        return {"files": file_contents}
-
-    def process(self, ai_response: Response, _data: StringDict) -> None:
-        """Save the new README."""
-        ai_response.write_to_file("README.md")
+    ai_response.write_to_file("README.md")

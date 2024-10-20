@@ -3,6 +3,7 @@ default: lint type_check test
 alias t := test
 
 @test:
+    rm .coverage
     uv run pytest tests/
 
 alias tc := type_check

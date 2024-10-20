@@ -2,14 +2,14 @@
 
 Example usage:
 
-`clm run summarise:Summarise --path src/ --pattern "*.py"`
+`clm run summarise src/ --pattern "*.py"`
 """
 
 from pathlib import Path
 
 import click
 
-from cli_llm import Response, StringDict, ToolRunnerInterface, helpers
+from cli_llm import ClmConfig, helpers, run
 
 PROMPT = """
 - Below are some python files from a library.
@@ -26,19 +26,15 @@ Filename: {{file}}
 """
 
 
-class Summarise(ToolRunnerInterface):
-    """Summarise the code and make some suggestions for new features."""
+@click.command()
+@click.argument("path", type=Path)
+@click.option("--pattern", type=str, default="*")
+@click.pass_obj
+def tool(config: ClmConfig, path: Path, pattern: str) -> None:
+    """Correct the grammar of a given python file."""
+    file_contents = helpers.gather_file_contents(search_path=path, pattern=pattern)
+    data = {"files": file_contents}
 
-    prompt = PROMPT
-    ARGS = (click.Option(["--path"]), click.Option(["--pattern"]))
+    ai_response = run(config, PROMPT, data)
 
-    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
-        """Gather the source tree."""
-        search_path = cli_kwargs.get("path", Path.cwd())
-        pattern = cli_kwargs.get("pattern", "*")
-        file_contents = helpers.gather_file_contents(search_path=search_path, pattern=pattern)
-        return {"files": file_contents}
-
-    def process(self, ai_response: Response, _data: StringDict) -> None:
-        """Print the AI response to stdout."""
-        ai_response.stream()
+    ai_response.stream()

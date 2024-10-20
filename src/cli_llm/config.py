@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import llm
 from platformdirs import PlatformDirs
 from pydantic import Field
 from pydantic_settings import (
@@ -43,3 +44,13 @@ class ClmConfig(BaseSettings):
             TomlConfigSettingsSource(settings_cls),
             PyprojectTomlConfigSettingsSource(settings_cls),
         )
+
+    def model(self) -> llm.Model:
+        """The actual LLM Model."""
+        return llm.get_model(self.ll_model)
+
+    def tool_files(self) -> list[Path]:
+        """List of all the files that might contain an LLM tool."""
+        tool_files = list(self.tools_dir.rglob("*.py"))
+        tool_files.sort()
+        return tool_files
