@@ -47,10 +47,12 @@ The LLM tool itself should be defined by a class that inherits from
 
 Example usage:
 
-`clm run readme:Readme -p path=src/ -p "pattern=*.py"`
+`clm run readme:Readme --path src/ --pattern "*.py"`
 """
 
 from pathlib import Path
+
+import click
 
 from cli_llm import Response, StringDict, ToolRunnerInterface, helpers
 
@@ -74,8 +76,9 @@ class Readme(ToolRunnerInterface):
     """Generate a README for the library."""
 
     prompt = PROMPT
+    ARGS = (click.Option(["--path"]), click.Option(["--pattern"]))
 
-    # `cli_kwargs` are the user provided parameters
+    # `cli_kwargs` are the user provided parameters, processed by click.
     def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         """Gather the source tree."""
         search_path = kwargs.get("path", Path.cwd())

@@ -72,3 +72,21 @@ def fake_project(request, temp_fs_factory):
 
     with temp_fs.chdir():
         yield CliRunner(mix_stderr=False)
+
+
+@pytest.fixture
+def example_project(request, temp_fs_factory):
+    temp_fs = temp_fs_factory.mktemp(request.node.name)
+
+    examples = {f.name: f.read_text() for f in Path("examples").glob("*.py")}
+
+    temp_fs.gen(
+        {
+            "pyproject.toml": {"tool": {"cli-llm": {"ll_model": "mock", "tools_dir": "tools"}}},
+            "tools": examples,
+            "test.txt": "",
+        }
+    )
+
+    with temp_fs.chdir():
+        yield CliRunner(mix_stderr=False)

@@ -30,7 +30,7 @@ def test_example_run(capsys, mock_model):
     mock_model.enqueue(["helloworld"])
     tool = example.Summarise(llm.get_model("mock"))
 
-    tool.run(("test_input",))
+    tool.run()
 
     captured = capsys.readouterr()
 
@@ -68,7 +68,7 @@ def test_failure_in_gather_data(logot: Logot):
     tool = example.BadGatherData(llm.get_model("mock"))
 
     with pytest.raises(SystemExit):
-        tool.run(("test_input",))
+        tool.run()
 
     logot.assert_logged(logged.error("Error in your tool's gather_data method"))
 
@@ -77,7 +77,7 @@ def test_failure_in_process(logot: Logot):
     tool = example.BadProcess(llm.get_model("mock"))
 
     with pytest.raises(SystemExit):
-        tool.run(("test_input",))
+        tool.run()
 
     logot.assert_logged(logged.error("Error in your tool's process method"))
 

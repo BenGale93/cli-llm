@@ -48,7 +48,7 @@ class ToolRunnerInterface(ABC):
     def process(self, ai_response: Response, data: StringDict) -> None:
         """Processes the response from the LLM."""
 
-    def process_args(self, cli_args: tuple[str, ...]) -> StringDict:
+    def process_cli_args(self, cli_args: tuple[str, ...]) -> StringDict:
         """Processes the CLI args intended for the tool."""
         parser = click.OptionParser()
         dummy_context = click.Context(self.command)
@@ -57,10 +57,10 @@ class ToolRunnerInterface(ABC):
         opts, _, _ = parser.parse_args(args=list(cli_args))
         return opts
 
-    def run(self, cli_args: tuple[str, ...]) -> None:
+    def run(self, cli_kwargs: StringDict | None = None) -> None:
         """Runs the tool."""
         log.info("Running the gather_data method.")
-        kwargs = self.process_args(cli_args)
+        kwargs = {} if cli_kwargs is None else cli_kwargs
         try:
             prompt_data = self.gather_data(cli_kwargs=kwargs)
         except Exception:
@@ -124,4 +124,6 @@ def run_tool(name: str, unprocessed_args: tuple[str, ...], settings: ClmConfig |
     log.debug("Getting LL model: %s", settings.ll_model)
     model = llm.get_model(settings.ll_model)
     tool = tool_class(model)
-    tool.run(unprocessed_args)
+
+    kwargs = tool.process_cli_args(unprocessed_args)
+    tool.run(kwargs)
