@@ -25,5 +25,5 @@ class InvalidModuleError(CliLlmError):
         )
 
 
-class InvalidToolClassError(CliLlmError):
-    """Raised when and Invalid Tool class is specified."""
+class InvalidToolCommandError(CliLlmError):
+    """Raised when and Invalid Tool command is specified."""

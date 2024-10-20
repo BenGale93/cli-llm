@@ -1,8 +1,9 @@
 """Example tool."""
 
+import click
 import rich
 
-from cli_llm import Response, StringDict, ToolRunnerInterface
+from cli_llm import ClmConfig, run
 
 PROMPT = """
 - This is a test prompt
@@ -11,24 +12,20 @@ PROMPT = """
 """
 
 
-class Summarise(ToolRunnerInterface):
-    prompt = PROMPT
-
-    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
-        return cli_kwargs
-
-    def process(self, ai_response: Response, data: StringDict) -> None:
-        for chunk in ai_response:
-            rich.print(chunk, end="")
-        for key, value in data.items():
-            rich.print(f"{key}: {value}")
+@click.group()
+def tool():
+    """The sub root of this example command."""
 
 
-class BadGatherData(Summarise):
-    def gather_data(self, cli_kwargs: StringDict) -> StringDict:  # noqa: ARG002
-        raise ZeroDivisionError
+@tool.command()
+@click.option("--test")
+@click.pass_obj
+def summarise(config: ClmConfig, test: str | None) -> None:
+    data = {"test": test}
 
+    ai_response = run(config, PROMPT, data)
 
-class BadProcess(Summarise):
-    def process(self, ai_response: Response, data: StringDict) -> None:  # noqa: ARG002
-        raise ZeroDivisionError
+    for chunk in ai_response:
+        rich.print(chunk, end="")
+    for key, value in data.items():
+        rich.print(f"{key}: {value}")

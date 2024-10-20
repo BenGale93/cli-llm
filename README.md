@@ -32,14 +32,14 @@ it will search the `$HOME/.local/share/cli-llm` folder (or equivalent on other
 platforms), for the tool. Here's an example of how to use the `run` command:
 
 ```bash
-$ clm run python_file:ToolClass -p parameter1=value1 -p parameter2=value2
+$ clm run python_file --path tests
 ```
 
-This will search for `python_file.py` and then execute the ToolClass found
-within, with the given parameters.
+This will search for `python_file.py`, look for an attribute inside the file
+called "tool" which should be an instance of `click.Command`. It will then run
+the command with the optional argument "path=tests".
 
-The LLM tool itself should be defined by a class that inherits from
-`cli_llm.ToolRunnerInterface`. For instance:
+The LLM tool itself should be defined by a `click.command`. For instance:
 
 ````python
 # readme.py
@@ -47,14 +47,15 @@ The LLM tool itself should be defined by a class that inherits from
 
 Example usage:
 
-`clm run readme:Readme -p path=src/ -p "pattern=*.py"`
+`clm run readme src/ --pattern "*.py"`
 """
 
 from pathlib import Path
 
-from cli_llm import Response, StringDict, ToolRunnerInterface, helpers
+import click
 
-# The template should use Jinja2 syntax to construct the prompt.
+from cli_llm import ClmConfig, helpers, run
+
 PROMPT = """
 - Below are some python files from a library.
 - Each file will be listed with its name and then its content.
@@ -70,34 +71,44 @@ Filename: {{file}}
 """
 
 
-class Readme(ToolRunnerInterface):
-    """Generate a README for the library."""
+@click.command()
+@click.argument("path", type=Path)
+@click.option("--pattern", type=str, default="*")
+@click.pass_obj
+def tool(config: ClmConfig, path: Path, pattern: str) -> None:
+    """Correct the grammar of a given python file."""
+    file_contents = helpers.gather_file_contents(search_path=path, pattern=pattern)
+    data = {"files": file_contents}
 
-    prompt = PROMPT
+    ai_response = run(config, PROMPT, data)
 
-    # `cli_kwargs` are the user provided parameters
-    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
-        """Gather the source tree."""
-        search_path = kwargs.get("path", Path.cwd())
-        pattern = kwargs.get("pattern", "*")
-        file_contents = helpers.gather_file_contents(search_path=search_path, pattern=pattern)
-        return {"files": file_contents} # the keys in this dictionary are used in the prompt template
-
-    # The `data` dictionary is the same as the dictionary returned from the gather_data method above
-    def process(self, ai_response: Response, data: StringDict) -> None:
-        """Save the new README."""
-        ai_response.write_to_file("README.md")
+    ai_response.write_to_file("README.md")
 
 ````
 
 Place `readme.py` in `~/.local/share/cli-llm` and you can run it with:
 
 ```bash
-clm run readme:Readme -p path=src/ -p "pattern=*.py"
+clm run readme src/ --pattern "*.py"
 ```
 
 It will save a new README file in the current working directory, based on the
 contents of your library. Experiment with the prompt to fine-tune the result.
+
+## Advanced Usage
+
+### Sub-tools
+
+You can place multiple commands inside a single python file by making use of
+`click`'s more advanced subcommand feature. As long as the entry point is
+`tool` (usually this would be `cli` in a normal `click` project) it will gather
+all subcommands.
+
+### Lookup warning
+
+If you have a Python file in the `tools_dir` that does not have a `tool`
+attribute, a warning will be emitted. To turn this off, add `tool = None` to
+the Python file.
 
 ## Configuration
 

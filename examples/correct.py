@@ -2,12 +2,14 @@
 
 Example usage:
 
-`clm run correct:Correct -p path=FILE.txt`
+`clm run correct FILE.txt`
 """
 
 from pathlib import Path
 
-from cli_llm import Response, StringDict, ToolRunnerInterface
+import click
+
+from cli_llm import ClmConfig, run
 
 PROMPT = """
 - The user will provide you with the content of a Python programming file.
@@ -23,16 +25,13 @@ PROMPT = """
 """
 
 
-class Correct(ToolRunnerInterface):
+@click.command()
+@click.argument("path", type=Path)
+@click.pass_obj
+def tool(config: ClmConfig, path: Path) -> None:
     """Correct the grammar of a given python file."""
+    data = {"file": path}
 
-    prompt = PROMPT
+    ai_response = run(config, PROMPT, data)
 
-    def gather_data(self, cli_kwargs: StringDict) -> StringDict:
-        """Gather the file to correct the grammar for."""
-        filename = Path(cli_kwargs["path"])
-        return {"file": filename}
-
-    def process(self, ai_response: Response, data: StringDict) -> None:
-        """Save the AI response to the given file."""
-        ai_response.write_to_file(data["file"])
+    ai_response.write_to_file(data["file"])
