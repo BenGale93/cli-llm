@@ -4,6 +4,7 @@ import typing as t
 from abc import ABC, abstractmethod
 from importlib import util
 
+import click
 import jinja2
 import llm
 
@@ -23,9 +24,12 @@ class ToolRunnerInterface(ABC):
     Using the template pattern, this class defines an interface that child classes can hook into.
     """
 
+    ARGS: tuple[click.Parameter, ...]
+
     def __init__(self, model: llm.Model) -> None:
         """Initialises the tool with a given model to run the prompt against."""
         self.model = model
+        self.command = click.Command(name=None, params=list(self.ARGS))
 
     @property
     @abstractmethod
@@ -44,9 +48,19 @@ class ToolRunnerInterface(ABC):
     def process(self, ai_response: Response, data: StringDict) -> None:
         """Processes the response from the LLM."""
 
-    def run(self, **kwargs: t.Any) -> None:
+    def process_args(self, cli_args: tuple[str, ...]) -> StringDict:
+        """Processes the CLI args intended for the tool."""
+        parser = click.OptionParser()
+        dummy_context = click.Context(self.command)
+        for param in self.command.params:
+            param.add_to_parser(parser, dummy_context)
+        opts, _, _ = parser.parse_args(args=list(cli_args))
+        return opts
+
+    def run(self, cli_args: tuple[str, ...]) -> None:
         """Runs the tool."""
         log.info("Running the gather_data method.")
+        kwargs = self.process_args(cli_args)
         try:
             prompt_data = self.gather_data(cli_kwargs=kwargs)
         except Exception:
@@ -97,7 +111,7 @@ def get_tool(name: str, settings: ClmConfig | None = None) -> type[ToolRunnerInt
     return class_  # type: ignore [no-any-return]
 
 
-def run_tool(name: str, cli_kwargs: StringDict, settings: ClmConfig | None = None) -> None:
+def run_tool(name: str, unprocessed_args: tuple[str, ...], settings: ClmConfig | None = None) -> None:
     """Run the given tool with the desired settings and kwargs."""
     settings = settings or ClmConfig()
     log.debug("Using tool: %s", name)
@@ -110,4 +124,4 @@ def run_tool(name: str, cli_kwargs: StringDict, settings: ClmConfig | None = Non
     log.debug("Getting LL model: %s", settings.ll_model)
     model = llm.get_model(settings.ll_model)
     tool = tool_class(model)
-    tool.run(**cli_kwargs)
+    tool.run(unprocessed_args)

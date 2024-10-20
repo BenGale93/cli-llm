@@ -29,12 +29,12 @@ def common_options(fn: t.Callable[..., RT]) -> t.Callable[..., RT]:
     return click.option("-v", "--verbose", count=True)(click.option("-q", "--quiet", is_flag=True, default=False)(fn))
 
 
-@cli.command()
+@cli.command(context_settings={"ignore_unknown_options": True})
 @click.argument("name", required=True, type=str)
 @click.option("-m", "--ll-model", default=None, help="The LLM to use.")
-@click.option("-p", "--parameter", multiple=True, help="Parameters to forward to the selected tool.")
+@click.argument("unprocessed_args", nargs=-1, type=click.UNPROCESSED)
 @common_options
-def run(*, name: str, ll_model: str | None, parameter: tuple[str, t.Any], verbose: int, quiet: bool) -> None:
+def run(*, name: str, ll_model: str | None, unprocessed_args: tuple[str, ...], verbose: int, quiet: bool) -> None:
     """Run the specified LLM tool."""
     set_verbosity(verbose=verbose, quiet=quiet)
 
@@ -44,5 +44,4 @@ def run(*, name: str, ll_model: str | None, parameter: tuple[str, t.Any], verbos
 
     final_config = ClmConfig(**cli_settings)
 
-    parameters = process_cli_kwargs(parameter)
-    run_tool(name, parameters, final_config)
+    run_tool(name, unprocessed_args, final_config)

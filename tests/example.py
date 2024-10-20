@@ -1,5 +1,6 @@
 """Example tool."""
 
+import click
 import rich
 
 from cli_llm import Response, StringDict, ToolRunnerInterface
@@ -13,6 +14,7 @@ PROMPT = """
 
 class Summarise(ToolRunnerInterface):
     prompt = PROMPT
+    ARGS = (click.Option(["--key1"]),)
 
     def gather_data(self, cli_kwargs: StringDict) -> StringDict:
         return cli_kwargs

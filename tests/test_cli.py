@@ -4,14 +4,14 @@ from cli_llm.cli import cli
 
 
 def test_run_tool_with_parameters_and_quiet(fake_project):
-    result = fake_project.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1", "-q"])
+    result = fake_project.invoke(cli, ["run", "example:Summarise", "--key1", "value1", "-q"])
 
     assert result.exit_code == 0
     assert result.output == "key1: value1\n"
 
 
 def test_run_tool_with_printing(fake_project):
-    result = fake_project.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1"])
+    result = fake_project.invoke(cli, ["run", "example:Summarise", "--key1", "value1"])
 
     assert result.exit_code == 0
     assert result.stdout == "key1: value1\n"
@@ -19,7 +19,7 @@ def test_run_tool_with_printing(fake_project):
 
 
 def test_run_tool_with_info(fake_project, logot: Logot):
-    fake_project.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1", "-v"])
+    fake_project.invoke(cli, ["run", "example:Summarise", "--key1", "value1", "-v"])
 
     logot.assert_logged(
         logged.info("Running the gather_data method.")
@@ -29,6 +29,12 @@ def test_run_tool_with_info(fake_project, logot: Logot):
 
 
 def test_run_tool_with_debug(fake_project, logot: Logot):
-    fake_project.invoke(cli, ["run", "example:Summarise", "--parameter", "key1=value1", "-vv"])
+    fake_project.invoke(cli, ["run", "example:Summarise", "--key1", "value1", "-vv"])
 
     logot.assert_logged(logged.debug("Using tool: example:Summarise") >> logged.debug("Getting LL model: mock"))
+
+
+def test_run_tool_with_help(fake_project):
+    result = fake_project.invoke(cli, ["run", "example:Summarise", "--help"])
+
+    assert result.exit_code == 0
