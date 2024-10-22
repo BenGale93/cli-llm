@@ -6,10 +6,10 @@ from cli_llm.cli import cli
 @pytest.mark.parametrize(
     ("tool", "params"),
     [
-        ("correct", ("test.txt",)),
         ("improve", ("test.txt",)),
-        ("readme", ("examples/", "--pattern", "*.py")),
-        ("summarise", ("examples/", "--pattern", "*.py")),
+        ("improve", ("test.txt", "--prompt", "correct-python")),
+        ("collect", ("examples/", "--pattern", "*.py")),
+        ("collect", ("examples/", "--pattern", "*.py", "--prompt", "readme")),
     ],
 )
 def test_example_folder(tool, params, example_project):
