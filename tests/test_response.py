@@ -2,15 +2,15 @@ import llm
 import pytest
 from rich.console import Console
 
-from cli_llm import logging
+from cli_llm import _logging
 from cli_llm.response import Response
 
 
 @pytest.fixture
 def patched_console():
-    logging.console = Console(record=True, stderr=True, force_terminal=True)
-    yield logging.console
-    logging.console = Console(record=True, stderr=True)
+    _logging.console = Console(record=True, stderr=True, force_terminal=True)
+    yield _logging.console
+    _logging.console = Console(record=True, stderr=True)
 
 
 def test_text(mock_model, patched_console):

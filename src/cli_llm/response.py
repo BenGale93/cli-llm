@@ -5,7 +5,7 @@ from pathlib import Path
 
 import llm
 
-from cli_llm.logging import console, spinner
+from cli_llm._logging import console, spinner
 
 
 class Response:
