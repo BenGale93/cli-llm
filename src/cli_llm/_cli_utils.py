@@ -7,10 +7,10 @@ from types import ModuleType
 import click
 
 from cli_llm import ClmConfig, errors
-from cli_llm._logging import get_logger
+from cli_llm._logging import ClmLogger
 from cli_llm.types import RT
 
-log = get_logger()
+log = ClmLogger()
 
 
 def common_options(fn: t.Callable[..., RT]) -> t.Callable[..., RT]:

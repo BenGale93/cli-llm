@@ -7,9 +7,9 @@ import click
 
 from cli_llm import ClmConfig
 from cli_llm._cli_utils import ToolGatherer, common_options
-from cli_llm._logging import get_logger, set_verbosity
+from cli_llm._logging import ClmLogger
 
-log = get_logger()
+log = ClmLogger()
 
 
 @click.group()
@@ -18,7 +18,7 @@ log = get_logger()
 @click.pass_context
 def cli(ctx: click.Context, *, ll_model: str, verbose: int, quiet: bool) -> None:
     """Welcome to the CLI-llm tool!"""
-    set_verbosity(verbose=verbose, quiet=quiet)
+    log.set_verbosity(verbose=verbose, quiet=quiet)
     cli_settings: dict[str, t.Any] = {}
     if ll_model:
         cli_settings["ll_model"] = ll_model
