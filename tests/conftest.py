@@ -59,13 +59,16 @@ def func_name(request: pytest.FixtureRequest):
     return request.node.name
 
 
+PYPROJECT_TOML = {"tool": {"cli-llm": {"ll_model": "mock", "tools_dir": "tools"}}}
+
+
 @pytest.fixture
 def fake_project(request, temp_fs_factory):
     temp_fs = temp_fs_factory.mktemp(request.node.name)
 
     temp_fs.gen(
         {
-            "pyproject.toml": {"tool": {"cli-llm": {"ll_model": "mock", "tools_dir": "tools"}}},
+            "pyproject.toml": PYPROJECT_TOML,
             "tools": {
                 "example.py": Path("tests/example.py").read_text(),
                 "bad_type.py": "tool = 1",
@@ -88,7 +91,7 @@ def example_project(request, temp_fs_factory):
 
     temp_fs.gen(
         {
-            "pyproject.toml": {"tool": {"cli-llm": {"ll_model": "mock", "tools_dir": "tools"}}},
+            "pyproject.toml": PYPROJECT_TOML,
             "tools": examples,
             "test.txt": "",
         }

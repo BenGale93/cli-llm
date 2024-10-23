@@ -8,9 +8,12 @@ from cli_llm.response import Response
 
 @pytest.fixture
 def patched_console():
+    old_console = _logging.console
     _logging.console = Console(record=True, stderr=True, force_terminal=True)
-    yield _logging.console
-    _logging.console = Console(record=True, stderr=True)
+    try:
+        yield _logging.console
+    finally:
+        _logging.console = old_console
 
 
 def test_text(mock_model, patched_console):
