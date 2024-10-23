@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from logot import Logot, logged
 
 from cli_llm.cli import cli
@@ -47,3 +49,10 @@ def test_tool_search_logging(fake_project, logot):
         >> logged.warning("The module `no_attr` does not have an attribute `tool`")
         >> logged.debug("Skipping module `skip`")
     )
+
+
+def test_new_tool(fake_project):
+    result = fake_project.invoke(cli, ["new", "fake", "--dest", "tools/"])
+
+    assert result.exit_code == 0
+    assert (Path.cwd() / "tools/fake.py").exists()

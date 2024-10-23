@@ -1,0 +1,24 @@
+"""CLI-LLM tool.
+
+Example usage:
+
+`clm run {{ name }}`
+"""
+
+import click
+
+from cli_llm import ClmConfig, helpers, run
+
+PROMPT = """
+"""
+
+
+@click.command()
+@click.pass_obj
+def tool(config: ClmConfig) -> None:
+    """{{ name|capitalize }} tool."""
+    data = {}
+
+    ai_response = run(config, PROMPT, data)
+
+    ai_response.stream()

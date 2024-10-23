@@ -1,6 +1,7 @@
 """CLI module for the application."""
 
 import typing as t
+from pathlib import Path
 
 import click
 
@@ -73,3 +74,13 @@ def cli(ctx: click.Context, *, ll_model: str, verbose: int, quiet: bool) -> None
 @cli.command(cls=ToolGatherer)
 def run() -> None:
     """Runs the specified CLI-llm tool."""
+
+
+@cli.command()
+@click.argument("name")
+@click.option("-d", "--dest", type=click.Path(path_type=Path), default=Path.cwd())
+def new(*, name: str, dest: Path) -> None:
+    """Creates a new CLI-llm tool template file at the given destination."""
+    from cli_llm.new import new_tool
+
+    new_tool(dest, name=name)

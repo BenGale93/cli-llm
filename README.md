@@ -95,6 +95,14 @@ clm run readme src/ --pattern "*.py"
 It will save a new README file in the current working directory, based on the
 contents of your library. Experiment with the prompt to fine-tune the result.
 
+## New Command
+
+To create a skeleton script you can use the `new` command:
+
+```bash
+clm new tool-name --dest tools/
+```
+
 ## Advanced Usage
 
 ### Sub-tools
