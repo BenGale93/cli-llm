@@ -25,6 +25,13 @@ the `llm` Python library and the `llm-ollama` plugin. Therefore, it requires
 Install `ollama`, start a server in a shell using `ollama serve`, and then pull
 the desired model using `ollama pull llama3.2:3b`.
 
+### Setting API keys
+
+To use an LLM via an API, you will need to set an API key with the `llm`
+library, follow their
+[instructions](https://github.com/simonw/llm/tree/main?tab=readme-ov-file#getting-started).
+
+
 ## Usage
 
 The library is designed to make it easy to run your own LLM tools. By default
@@ -172,4 +179,3 @@ tools_dir = "~/tools"
 ## Plans
 
 - Extract common functions into the `helper` module.
-- Extend configuration support, so API keys (e.g., for authentication) can be specified.
