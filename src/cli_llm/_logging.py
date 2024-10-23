@@ -69,7 +69,7 @@ class ClmLogger:
         if quiet:
             self.verbose = NO_LOGGING
         else:
-            self.verbose = self.VERBOSE_COUNT[verbose]
+            self.verbose = self.VERBOSE_COUNT.get(verbose, 10)
         self._log.setLevel(self.verbose)
 
     def print(self, *objects: t.Any, sep: str = " ", end: str = "\n") -> None:

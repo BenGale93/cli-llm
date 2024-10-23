@@ -32,6 +32,12 @@ def test_run_tool_with_debug(fake_project, logot: Logot):
     logot.assert_logged(logged.debug("Prompt: %s"))
 
 
+def test_run_tool_with_lots_of_vs(fake_project, logot: Logot):
+    fake_project.invoke(cli, ["-vvv", "run", "example", "summarise", "--test", "value1"])
+
+    logot.assert_logged(logged.debug("Prompt: %s"))
+
+
 def test_run_tool_with_help(fake_project):
     result = fake_project.invoke(cli, ["run", "example", "--help"])
 
