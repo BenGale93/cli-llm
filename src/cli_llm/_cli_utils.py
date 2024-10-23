@@ -8,12 +8,12 @@ import click
 
 from cli_llm import ClmConfig, errors
 from cli_llm._logging import ClmLogger
-from cli_llm.types import RT
+from cli_llm.types import RT, P
 
 log = ClmLogger()
 
 
-def common_options(fn: t.Callable[..., RT]) -> t.Callable[..., RT]:
+def common_options(fn: t.Callable[P, RT]) -> t.Callable[P, RT]:
     """Common options for commands."""
     return click.option("-v", "--verbose", count=True)(click.option("-q", "--quiet", is_flag=True, default=False)(fn))
 

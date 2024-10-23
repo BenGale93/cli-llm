@@ -1,19 +1,20 @@
 """Module for running LLM tools."""
 
-import typing as t
+from typing import TYPE_CHECKING
 
 import jinja2
 
 from cli_llm._logging import ClmLogger
-from cli_llm.config import ClmConfig
 from cli_llm.response import Response
 
-StringDict = dict[str, t.Any]
+if TYPE_CHECKING:
+    from cli_llm.config import ClmConfig
+    from cli_llm.types import StringDict
 
 log = ClmLogger()
 
 
-def _render(prompt: str, prompt_data: StringDict) -> str:
+def _render(prompt: str, prompt_data: "StringDict") -> str:
     """Render the prompt with the given data."""
     log.info("Rendering the prompt.")
     rendered_prompt = jinja2.Template(prompt).render(**prompt_data)
@@ -21,7 +22,7 @@ def _render(prompt: str, prompt_data: StringDict) -> str:
     return rendered_prompt
 
 
-def run(config: ClmConfig, prompt: str, prompt_data: StringDict) -> Response:
+def run(config: "ClmConfig", prompt: str, prompt_data: "StringDict") -> Response:
     """Run the LLM.
 
     Args:

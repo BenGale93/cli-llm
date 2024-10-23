@@ -3,20 +3,21 @@
 import typing as t
 from pathlib import Path
 
-import llm
-
 from cli_llm._logging import console, spinner
+
+if t.TYPE_CHECKING:
+    import llm
 
 
 class Response:
     """Response from the LLM."""
 
-    def __init__(self, response: llm.Response) -> None:
+    def __init__(self, response: "llm.Response") -> None:
         """Initialise with the "underlying llm Response object."""
         self._response = response
 
     @property
-    def response(self) -> llm.Response:
+    def response(self) -> "llm.Response":
         """Returns the underlying llm Response object."""
         return self._response
 
