@@ -10,7 +10,7 @@ applications.
 
 To utilize this library, you will currently need to clone the repository and
 then install it as a [`uv`](https://docs.astral.sh/uv/) tool. Follow these
-steps:
+steps after cloning.
 
 ```bash
 cd cli-llm
@@ -20,17 +20,20 @@ uv tool install .
 ## LLM Set Up
 
 Currently, the tool defaults to `llama3.2:3b` and communicates with it using
-the `llm` Python library and the `llm-ollama` plugin. Therefore, it requires
-`ollama` to be installed on your system running the `llama3.2:3b` model.
-Install `ollama`, start a server in a shell using `ollama serve`, and then pull
-the desired model using `ollama pull llama3.2:3b`.
+the `llm` Python library and the `llm-ollama` plugin. Its documentation can be
+found [here](https://github.com/simonw/llm/tree/main?tab=readme-ov-file#llm).
+
+To use the default, you need `ollama` to be installed on your system and
+running the `llama3.2:3b` model. Install `ollama` using the instructions
+[here](https://github.com/ollama/ollama?tab=readme-ov-file#ollama), start a
+server in a shell using `ollama serve`, and then pull the desired model using
+`ollama pull llama3.2:3b`.
 
 ### Setting API keys
 
-To use an LLM via an API, you will need to set an API key with the `llm`
-library, follow their
+Alternatively, to use an LLM via an API, you will need to set an API key with
+the `llm` library, follow their
 [instructions](https://github.com/simonw/llm/tree/main?tab=readme-ov-file#getting-started).
-
 
 ## Usage
 
@@ -102,6 +105,14 @@ clm run readme src/ --pattern "*.py"
 It will save a new README file in the current working directory, based on the
 contents of your library. Experiment with the prompt to fine-tune the result.
 
+## Listing all available tools
+
+To list all tools available, run:
+
+```bash
+clm run --help
+```
+
 ## New Command
 
 To create a skeleton script you can use the `new` command:
@@ -118,6 +129,16 @@ You can place multiple commands inside a single python file by making use of
 `click`'s more advanced subcommand feature. As long as the entry point is
 `tool` (usually this would be `cli` in a normal `click` project) it will gather
 all subcommands.
+
+You can then list all sub-tools by running the below. Where filename is the
+name of the Python file containing the sub-tools.
+
+```bash
+clm run filename --help
+```
+
+For an example of what this would look like, checkout `examples/poetry.py` in
+this repo.
 
 ### Lookup warning
 
