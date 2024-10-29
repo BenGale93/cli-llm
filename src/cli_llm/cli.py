@@ -4,6 +4,7 @@ import typing as t
 from pathlib import Path
 
 import click
+from rich.traceback import install
 
 from cli_llm import ClmConfig
 from cli_llm._cli_utils import ToolGatherer, common_options
@@ -18,6 +19,7 @@ log = ClmLogger()
 @click.pass_context
 def cli(ctx: click.Context, *, ll_model: str, verbose: int, quiet: bool) -> None:
     """Welcome to the CLI-llm tool!"""
+    install(show_locals=True, suppress=[click])
     log.set_verbosity(verbose=verbose, quiet=quiet)
     cli_settings: dict[str, t.Any] = {}
     if ll_model:
