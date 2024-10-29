@@ -22,10 +22,10 @@ jobs:
         run: uv python install 3.12
 
       - name: Install ruff
-        run: uv tool install ruff
+        run: uv sync --group lint --no-dev
 
       - name: Run ruff
-        run: ruff check --output-format=github .
+        run: uv run --no-sync ruff check --output-format=github .
 
   format:
     runs-on: ubuntu-latest
@@ -40,10 +40,10 @@ jobs:
         run: uv python install 3.12
 
       - name: Install ruff
-        run: uv tool install ruff
+        run: uv sync --group lint --no-dev
 
       - name: Run ruff
-        run: ruff format .
+        run: uv run --no-sync ruff format .
 
   typing:
     runs-on: ubuntu-latest
@@ -58,10 +58,10 @@ jobs:
         run: uv python install 3.12
 
       - name: Install the project
-        run: uv sync --all-extras --dev
+        run: uv sync --group typing-test --no-dev
 
       - name: Run type checking
-        run: uv run mypy src/ tests/
+        run: uv run --no-sync mypy src/ tests/
 
   test:
     name: test py${{ matrix.python }} on ${{ matrix.os }}
@@ -87,7 +87,7 @@ jobs:
         run: uv python install ${{ matrix.python}}
 
       - name: Install the project
-        run: uv sync --all-extras --dev
+        run: uv sync --no-sync --group test --no-dev
 
       - name: Run tests
         run: uv run pytest tests/
