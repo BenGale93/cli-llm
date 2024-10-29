@@ -87,7 +87,7 @@ jobs:
         run: uv python install ${{ matrix.python}}
 
       - name: Install the project
-        run: uv sync --no-sync --group test --no-dev
+        run: uv sync --group test --no-dev
 
       - name: Run tests
-        run: uv run pytest tests/
+        run: uv run --no-sync pytest tests/
