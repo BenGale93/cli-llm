@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  MINIMUM_PYTHON: "3.12"
+
 on:
   push:
     branches:
@@ -22,7 +25,7 @@ jobs:
         run: uv python install 3.12
 
       - name: Install ruff
-        run: uv sync --group lint --no-dev
+        run: uv sync --only-group lint
 
       - name: Run ruff
         run: uv run --no-sync ruff check --output-format=github .
@@ -40,7 +43,7 @@ jobs:
         run: uv python install 3.12
 
       - name: Install ruff
-        run: uv sync --group lint --no-dev
+        run: uv sync --only-group lint
 
       - name: Run ruff
         run: uv run --no-sync ruff format .
