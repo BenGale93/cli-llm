@@ -30,7 +30,7 @@ Filename: {{f}}
 @click.argument("path", type=Path)
 @click.option("-l", "--lang", type=str, default="")
 @click.option("-p", "--pattern", type=str, default="*")
-@click.option("-o", "--output", type=Path | None, default=None)
+@click.option("-o", "--output", type=Path, default=None)
 @click.pass_obj
 def tool(config: ClmConfig, path: Path, lang: str, pattern: str, output: Path | None) -> None:
     """Summarise a given set of files."""

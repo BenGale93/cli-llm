@@ -8,8 +8,8 @@ from cli_llm.cli import cli
     [
         ("improve", ("test.txt",)),
         ("improve", ("test.txt", "--prompt", "correct-python")),
-        ("collect", ("examples/", "--pattern", "*.py")),
-        ("collect", ("examples/", "--pattern", "*.py", "--prompt", "readme")),
+        ("readme", ("examples/", "--pattern", "*.py", "-l", "python")),
+        ("summarise", ("examples/", "--pattern", "*.py", "-l", "python")),
     ],
 )
 def test_example_folder(tool, params, example_project):
