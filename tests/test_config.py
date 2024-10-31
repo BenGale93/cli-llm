@@ -1,9 +1,11 @@
 import os
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from cli_llm.cli import cli
+from cli_llm.config import ClmConfig
 
 
 def test_config_from_pyproject(fake_project):
@@ -51,3 +53,13 @@ def test_config_from_env(temp_fs_factory, func_name):
 
     assert result.exit_code == 0
     assert result.output == "test: value1\n"
+
+
+def test_frozen_fields():
+    config = ClmConfig()
+
+    with pytest.raises(ValueError, match="Field is frozen"):
+        config.tools_dir = []
+
+    with pytest.raises(ValueError, match="Field is frozen"):
+        config.ll_model = ""

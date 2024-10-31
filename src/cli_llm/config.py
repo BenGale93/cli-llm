@@ -1,5 +1,6 @@
 """Configuration for CLI-LLM."""
 
+import typing as t
 from pathlib import Path
 
 import llm
@@ -13,19 +14,39 @@ from pydantic_settings import (
     TomlConfigSettingsSource,
 )
 
+from cli_llm._logging import ClmLogger
+
+log = ClmLogger()
+
 DIRS = PlatformDirs("cli-llm", "BAG")
 
 
 class ClmConfig(BaseSettings):
     """Config class for the application."""
 
-    ll_model: str = Field(default="llama3.2:latest")
-    tools_dir: Path = Field(default=DIRS.user_data_path)
+    ll_model: str = Field(default="llama3.2:latest", frozen=True)
+    tools_dir: Path | list[Path] = Field(default=DIRS.user_data_path, frozen=True)
 
     model_config = SettingsConfigDict(
         pyproject_toml_table_header=("tool", "cli-llm"),
         toml_file=DIRS.user_config_path / "cli_llm.toml",
     )
+
+    def model_post_init(self, __context: t.Any) -> None:
+        """Initialise the map of potential tool files.
+
+        Currently does not handle name collisions and just overwrites existing tool files.
+        """
+        tool_files: dict[str, Path] = {}
+        tools_dir = [self.tools_dir] if isinstance(self.tools_dir, Path) else self.tools_dir
+        for directory in tools_dir:
+            dir_ = directory.expanduser().absolute()
+            log.info("Looking for tools in: %s", dir_)
+            files = {f.stem: f for f in dir_.rglob("*.py")}
+            log.info("Found the following tool files %s", files)
+            tool_files |= files
+
+        self._tool_files = dict(sorted(tool_files.items()))
 
     @classmethod
     def settings_customise_sources(
@@ -49,8 +70,7 @@ class ClmConfig(BaseSettings):
         """The actual LLM Model."""
         return llm.get_model(self.ll_model)
 
-    def tool_files(self) -> list[Path]:
-        """List of all the files that might contain an LLM tool."""
-        tool_files = list(self.tools_dir.rglob("*.py"))
-        tool_files.sort()
-        return tool_files
+    @property
+    def tool_files(self) -> dict[str, Path]:
+        """Map of tools to their script locations."""
+        return self._tool_files

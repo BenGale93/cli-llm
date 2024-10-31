@@ -178,11 +178,11 @@ ll_model = "other"
 
 ### tools-dir
 
-The directory to search for tools within.
+The directory or directories to search for tools within.
 
 Default value: `~/.local/share/cli-llm`
 
-Type: Path
+Type: Path | list[Path]
 
 Examples:
 
@@ -194,9 +194,5 @@ tools_dir = "~/tools"
 
 ```toml
 # cli_llm.toml
-tools_dir = "~/tools"
+tools_dir = ["~/tools", "~/.local/share/cli-llm"]
 ```
-
-## Plans
-
-- Extract common functions into the `helper` module.

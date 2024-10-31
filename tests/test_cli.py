@@ -57,6 +57,13 @@ def test_tool_search_logging(fake_project, logot):
     )
 
 
+def test_run_tool_not_found(fake_project):
+    result = fake_project.invoke(cli, ["run", "fake"])
+
+    assert result.exit_code == 2  # noqa: PLR2004
+    assert result.stderr == "Error: Unrecognized tool command `fake`\n"
+
+
 def test_new_tool(fake_project):
     result = fake_project.invoke(cli, ["new", "fake", "--dest", "tools/"])
 

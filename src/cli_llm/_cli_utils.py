@@ -19,14 +19,14 @@ def common_options(fn: t.Callable[P, RT]) -> t.Callable[P, RT]:
 
 
 @cache
-def load_tool_script(module_name: str, tools_dir: Path) -> ModuleType:
-    """Load module_name from tools_dir."""
-    module_file = f"{module_name}.py"
+def load_tool_script(filepath: Path) -> ModuleType:
+    """Load the given filepath as a tool script."""
+    module_name = filepath.stem
+    tools_dir = filepath.parent
 
-    log.info("Looking for the tool in: %s", tools_dir)
-    full_module_file = tools_dir / module_file
+    log.info("Loading tool from: %s", filepath)
 
-    spec = util.spec_from_file_location("test", full_module_file)
+    spec = util.spec_from_file_location("test", filepath)
     if spec is None or spec.loader is None:  # pragma: no cover # Not sure how to trigger this scenario
         raise errors.InvalidModuleError(module_name, tools_dir)
     module = util.module_from_spec(spec)
@@ -45,22 +45,22 @@ class ToolGatherer(click.MultiCommand):
         """Dynamically get the list of tool commands."""
         final_config: ClmConfig = ctx.obj
         rv = []
-        for filepath in final_config.tool_files():
+        for name, filepath in final_config.tool_files.items():
             try:
-                module = load_tool_script(filepath.stem, final_config.tools_dir)
+                module = load_tool_script(filepath)
             except Exception as e:  # noqa: BLE001
-                log.warning("Failed to get the tool script from `%s` due to: %s", filepath.stem, e)
+                log.warning("Failed to get the tool script from `%s` due to: %s", name, e)
                 continue
             if not hasattr(module, "tool"):
-                log.warning("The module `%s` does not have an attribute `tool`", filepath.stem)
+                log.warning("The module `%s` does not have an attribute `tool`", name)
                 continue
             if module.tool is None:
-                log.debug("Skipping module `%s`", filepath.stem)
+                log.debug("Skipping module `%s`", name)
                 continue
             if not isinstance(module.tool, click.Command):
-                log.warning("The attribute `tool` in the module `%s` is not of type `click.Command`", filepath.stem)
+                log.warning("The attribute `tool` in the module `%s` is not of type `click.Command`", name)
                 continue
-            rv.append(filepath.stem)
+            rv.append(name)
         rv.sort()
 
         return rv
@@ -68,7 +68,12 @@ class ToolGatherer(click.MultiCommand):
     def get_command(self, ctx: click.Context, name: str) -> click.Command:
         """Dynamically get the named tool command."""
         final_config: ClmConfig = ctx.obj
-        module = load_tool_script(name, final_config.tools_dir)
+        try:
+            filepath = final_config.tool_files[name]
+        except KeyError:
+            msg = f"Unrecognized tool command `{name}`"
+            raise click.UsageError(msg) from None
+        module = load_tool_script(filepath)
         if not isinstance(module.tool, click.Command):  # pragma: no cover # Should be filtered out in list_commands
             msg = f"The attribute `tool` in the module :{module.__name__} is not of type `click.Command`"
             raise errors.InvalidToolCommandError(msg)
