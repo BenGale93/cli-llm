@@ -61,27 +61,25 @@ def test_stream(mock_model, capsys):
     assert "helloworld" in capsys.readouterr()
 
 
-def test_write_to_file(mock_model, temp_fs_factory, func_name):
-    temp_fs = temp_fs_factory.mktemp(func_name)
+def test_write_to_file(mock_model, named_temp_fs):
     mock_model.enqueue(["helloworld"])
     model = llm.get_model("mock")
 
     response = Response(model.prompt(""))
 
-    test_file = temp_fs / "test.txt"
+    test_file = named_temp_fs / "test.txt"
     response.write_to_file(test_file)
 
     assert test_file.read_text() == "helloworld\n"
 
 
-def test_write_to_file_has_newline(mock_model, temp_fs_factory, func_name):
-    temp_fs = temp_fs_factory.mktemp(func_name)
+def test_write_to_file_has_newline(mock_model, named_temp_fs):
     mock_model.enqueue(["helloworld\n"])
     model = llm.get_model("mock")
 
     response = Response(model.prompt(""))
 
-    test_file = temp_fs / "test.txt"
+    test_file = named_temp_fs / "test.txt"
     response.write_to_file(test_file)
 
     assert test_file.read_text() == "helloworld\n"

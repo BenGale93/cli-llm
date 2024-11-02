@@ -54,11 +54,6 @@ def register_embed_demo_model(mock_model):
         pm.unregister(name="undo-mock-models-plugin")
 
 
-@pytest.fixture
-def func_name(request: pytest.FixtureRequest):
-    return request.node.name
-
-
 PYPROJECT_TOML = {"tool": {"cli-llm": {"ll_model": "mock", "tools_dir": "tools"}}}
 
 
