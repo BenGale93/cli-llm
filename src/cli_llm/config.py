@@ -32,7 +32,7 @@ class ClmConfig(BaseSettings):
         toml_file=DIRS.user_config_path / "cli_llm.toml",
     )
 
-    def model_post_init(self, __context: t.Any) -> None:
+    def model_post_init(self, _context: t.Any) -> None:
         """Initialise the map of potential tool files.
 
         Currently does not handle name collisions and just overwrites existing tool files.

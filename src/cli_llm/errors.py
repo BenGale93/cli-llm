@@ -21,7 +21,7 @@ class InvalidModuleError(CliLlmError):
             tools_dir: Where the tool was searched for.
         """
         super().__init__(
-            f"Invalid module name: {module_name}." f" Searched in the following directory: {tools_dir.resolve()}"
+            f"Invalid module name: {module_name}. Searched in the following directory: {tools_dir.resolve()}"
         )
 
 

@@ -4,4 +4,4 @@ from cli_llm.config import ClmConfig
 from cli_llm.response import Response
 from cli_llm.run import run
 
-__all__ = ["run", "Response", "ClmConfig"]
+__all__ = ["ClmConfig", "Response", "run"]
