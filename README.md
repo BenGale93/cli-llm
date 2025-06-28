@@ -1,55 +1,58 @@
 ## Introduction
 
-This Python library provides a simple way to create and run custom Large
-Language Model (LLM) tools using a command-line interface. It is a Python
-re-implementation of [rust-devai](https://github.com/jeremychone/rust-devai),
-offering a user-friendly interface for developers to build their own LLM
-applications.
+This library simplifies creating and running custom Large Language Model (LLM)
+tools from your command line. It's a Python re-implementation of the excellent
+[rust-devai](https://github.com/jeremychone/rust-devai), providing a
+user-friendly interface for building your own LLM-powered applications.
 
 ## Installation
 
-To utilize this library, you will currently need to clone the repository and
-then install it as a [`uv`](https://docs.astral.sh/uv/) tool. Follow these
-steps after cloning.
+To get started, clone the repository and install it as a
+[`uv`](https://docs.astral.sh/uv/) tool. After cloning the repository, run the
+following commands:
 
 ```bash
 cd cli-llm
 uv tool install .
 ```
 
-## LLM Set Up
+## LLM Setup
 
-Currently, the tool defaults to `llama3.2:3b` and communicates with it using
-the `llm` Python library and the `llm-ollama` plugin. Its documentation can be
-found [here](https://github.com/simonw/llm/tree/main?tab=readme-ov-file#llm).
+By default, this tool uses `llama3.2:3b` and communicates with it via the `llm`
+Python library and its `llm-ollama` plugin. You can find the `llm`
+documentation
+[here](https://github.com/simonw/llm/tree/main?tab=readme-ov-file#llm).
 
-To use the default, you need `ollama` to be installed on your system and
-running the `llama3.2:3b` model. Install `ollama` using the instructions
-[here](https://github.com/ollama/ollama?tab=readme-ov-file#ollama), start a
-server in a shell using `ollama serve`, and then pull the desired model using
-`ollama pull llama3.2:3b`.
+To use the default model, you'll need `ollama` installed and running.
+1. Install `ollama` using the instructions [here](https://github.com/ollama/ollama).
+2. Start the Ollama server in a new terminal: `ollama serve`.
+3. Pull the required model: `ollama pull llama3.2:3b`.
 
-### Setting API keys
+### Using API Keys
 
-Alternatively, to use an LLM via an API, you will need to set an API key with
-the `llm` library, follow their
-[instructions](https://github.com/simonw/llm/tree/main?tab=readme-ov-file#getting-started).
+Alternatively, to use an LLM provider's API, you must set an API key. Follow
+the `llm` library's
+[instructions](https://github.com/simonw/llm/tree/main?tab=readme-ov-file#getting-started)
+to configure your keys.
 
 ## Usage
 
-The library is designed to make it easy to run your own LLM tools. By default
-it will search the `$HOME/.local/share/cli-llm` folder (or equivalent on other
-platforms), for the tool. Here's an example of how to use the `run` command:
+This library makes it easy to execute your custom LLM tools. By default, it
+searches for tools in the `$HOME/.local/share/cli-llm` folder (or the
+equivalent on other platforms).
+
+Here's an example of how to use the `run` command:
 
 ```bash
 $ clm run python_file --path tests
 ```
 
-This will search for `python_file.py`, look for an attribute inside the file
-called "tool" which should be an instance of `click.Command`. It will then run
-the command with the optional argument "path=tests".
+This command searches for `python_file.py` in your tools directory. Inside that
+file, it looks for a `tool` attribute, which must be a `click.Command`
+instance. It then executes the command, passing along any additional arguments
+like `--path tests`.
 
-The LLM tool itself should be defined by a `click.command`. For instance:
+The LLM tool itself must be defined as a `click.Command`. For example:
 
 ````python
 # readme.py
@@ -98,26 +101,26 @@ def tool(config: ClmConfig, path: Path, lang: str, pattern: str, output: Path) -
 
 ````
 
-Place `readme.py` in `~/.local/share/cli-llm` and you can run it with:
+Place this `readme.py` file in `~/.local/share/cli-llm`, and you can run it with:
 
 ```bash
 clm run readme src/ --pattern "*.py"
 ```
 
-It will save a new README file in the current working directory, based on the
-contents of your library. Experiment with the prompt to fine-tune the result.
+This will generate a new `README.md` in your current directory based on the
+contents of your library. Experiment with the prompt to fine-tune the results!
 
-## Listing all available tools
+## Listing Available Tools
 
-To list all tools available, run:
+To see a list of all available tools, run:
 
 ```bash
 clm run --help
 ```
 
-## New Command
+## Creating a New Tool
 
-To create a skeleton script you can use the `new` command:
+You can create a skeleton for a new tool using the `new` command:
 
 ```bash
 clm new tool-name --dest tools/
@@ -127,43 +130,40 @@ clm new tool-name --dest tools/
 
 ### Sub-tools
 
-You can place multiple commands inside a single python file by making use of
-`click`'s more advanced subcommand feature. As long as the entry point is
-`tool` (usually this would be `cli` in a normal `click` project) it will gather
-all subcommands.
+You can bundle multiple commands into a single Python file using `click`'s
+subcommand feature. As long as the primary entry point is named `tool` (this
+would typically be `cli` in a standard `click` project), the library will
+automatically discover all its subcommands.
 
-You can then list all sub-tools by running the below. Where filename is the
-name of the Python file containing the sub-tools.
+To list the sub-tools within a specific file, run the following command, where
+`filename` is the name of your Python file:
 
 ```bash
 clm run filename --help
 ```
 
-For an example of what this would look like, checkout `examples/poetry.py` in
-this repo.
+For a practical example, see `examples/poetry.py` in this repository.
 
-### Lookup warning
+### Suppressing Lookup Warnings
 
-If you have a Python file in the `tools_dir` that does not have a `tool`
-attribute, a warning will be emitted. To turn this off, add `tool = None` to
-the Python file.
+If a Python file in your `tools_dir` does not have a `tool` attribute, the
+library will emit a warning. To suppress this for a specific file, simply add
+`tool = None` to it.
 
 ## Configuration
 
-You can configure via the CLI, environment variables, an app specific config
-file, or via pyproject.toml.
+Configuration is flexible: you can use CLI options, environment variables,
+a dedicated config file, or your project's `pyproject.toml`.
 
-The config file is located at `~/.config/cli-llm/cli_llm.toml` on Unix and
-equivalent locations on other platforms.
+The dedicated config file is located at `~/.config/cli-llm/cli_llm.toml` on
+Unix-like systems and in equivalent locations on other platforms.
 
+### `ll_model`
 
-### ll-model
+Specifies the LLM model to use.
 
-The model to use.
-
-Default value: "llama3.2:3b"
-
-Type: str
+- **Default**: `"llama3.2:3b"`
+- **Type**: `str`
 
 Examples:
 
@@ -178,13 +178,12 @@ ll_model = "other"
 ll_model = "other"
 ```
 
-### tools-dir
+### `tools_dir`
 
-The directory or directories to search for tools within.
+The directory or directories to search for tools.
 
-Default value: `~/.local/share/cli-llm`
-
-Type: Path | list[Path]
+- **Default**: `~/.local/share/cli-llm`
+- **Type**: `Path | list[Path]`
 
 Examples:
 
