@@ -15,6 +15,7 @@ IMPROVE_PROMPT = """
 - The user will provide you with the content of a file.
 - You will improve the writing style to be more grammatically correct and engaging.
 - Do not respond with anything than the modified file.
+- Make sure that lines are no longer than 100 characters.
 
 ```
 {{file.read_text()}}
@@ -27,7 +28,8 @@ CORRECT_PYTHON_PROMPT = """
 - Only modify comments if there is a spelling or grammar mistake.
 - Make sure not to change the code, except for typos within strings.
 - Do not change the code itself, only comments.
-- Do not respond with anything than the modified code
+- Do not respond with anything than the modified code.
+- Do not include any backtick fenced code blocks.
 
 ```python
 {{file.read_text()}}
